@@ -1,0 +1,36 @@
+[project]
+name = "gaming-events-scraper"
+version = "0.1.0"
+description = "A social media scraper for gaming events from Facebook and Discord"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "EventBoardAgent", email = "noreply@example.com"}
+]
+keywords = ["gaming", "events", "scraper", "facebook", "discord", "social-media"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Games/Entertainment",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "discord.py>=2.3.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "mypy>=1.17.1",
+    "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pytest-cov>=6.2.1",
+    "ruff>=0.12.7",
+]
