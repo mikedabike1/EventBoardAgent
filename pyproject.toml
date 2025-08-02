@@ -24,6 +24,9 @@ dependencies = [
     "ipykernel>=6.25.0",
 ]
 
+[project.scripts]
+gaming-events-scraper = "src.gaming_events_scraper.scraper:main"
+
 [dependency-groups]
 dev = [
     "black>=25.1.0",
