@@ -24,7 +24,7 @@ class DiscordEventScraper(EventExtractor):
         """
         super().__init__()
         self.bot_token = bot_token
-        self.events = []
+        self.events: List[GamingEvent] = []
 
     async def scrape_server_events(
         self, guild_id: int, channel_names: Optional[List[str]] = None

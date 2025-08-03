@@ -153,7 +153,7 @@ class GamingEventsScraper:
         print("\\n=== EVENTS SUMMARY ===")
 
         # Group by game system
-        by_game = {}
+        by_game: Dict[str, List[GamingEvent]] = {}
         for event in events:
             game = event.game_system
             if game not in by_game:
