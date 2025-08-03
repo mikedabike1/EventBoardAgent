@@ -9,7 +9,7 @@ from .scraper import GamingEventsScraper
 
 __all__ = [
     "GamingEvent",
-    "EventExtractor", 
+    "EventExtractor",
     "FacebookEventScraper",
     "DiscordEventScraper",
     "EventStorage",

@@ -1,0 +1,22 @@
+# Code owners for the Gaming Events Scraper project
+# These users will be automatically requested for review when PRs are opened
+
+# Global ownership - all files
+* @mikealtschwager
+
+# Source code requires review
+/src/ @mikealtschwager
+
+# Tests require review  
+/tests/ @mikealtschwager
+
+# CI/CD configuration requires review
+/.github/ @mikealtschwager
+
+# Package configuration requires review
+/pyproject.toml @mikealtschwager
+/uv.lock @mikealtschwager
+
+# Documentation requires review
+/README.md @mikealtschwager
+/project_spec.md @mikealtschwager

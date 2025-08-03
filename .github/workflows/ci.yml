@@ -1,0 +1,168 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+        enable-cache: true
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: uv sync --all-extras
+    
+    - name: Run tests with coverage
+      run: uv run pytest tests/ --cov=src --cov-report=xml --cov-report=term-missing -v
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        fail_ci_if_error: false
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+        enable-cache: true
+    
+    - name: Set up Python
+      run: uv python install 3.11
+    
+    - name: Install dependencies
+      run: uv sync --all-extras
+    
+    - name: Run black (code formatting check)
+      run: uv run black --check --diff .
+    
+    - name: Run ruff (linting)
+      run: uv run ruff check .
+    
+    - name: Run mypy (type checking)
+      run: uv run mypy src/ --ignore-missing-imports
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+        enable-cache: true
+    
+    - name: Set up Python
+      run: uv python install 3.11
+    
+    - name: Install dependencies
+      run: uv sync --all-extras
+    
+    - name: Run safety check for security vulnerabilities
+      run: uv run pip install safety && uv run safety check --json || true
+    
+    - name: Run bandit for security issues
+      run: uv run pip install bandit && uv run bandit -r src/ -f json || true
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+        enable-cache: true
+    
+    - name: Set up Python
+      run: uv python install 3.11
+    
+    - name: Install dependencies
+      run: uv sync --all-extras
+    
+    - name: Build package
+      run: uv build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+        enable-cache: true
+    
+    - name: Set up Python
+      run: uv python install 3.11
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist/
+    
+    - name: Install built package
+      run: uv pip install dist/*.whl
+    
+    - name: Test import
+      run: python -c "from src.gaming_events_scraper import GamingEvent, GamingEventsScraper; print('Import successful')"
+    
+    - name: Run basic functionality test
+      run: |
+        python -c "
+        from src.gaming_events_scraper import GamingEvent, EventStorage
+        import tempfile
+        
+        # Test basic functionality
+        event = GamingEvent('Test Event', 'MTG', 'Test Venue', '2024-12-01', '19:00', 'test')
+        print(f'Created event: {event.title}')
+        
+        # Test storage
+        with tempfile.TemporaryDirectory() as tmpdir:
+            storage = EventStorage(tmpdir)
+            filepath = storage.save_events([event])
+            loaded = storage.load_events('gaming_events_20*.json'.replace('*', filepath.split('_')[-1].split('.')[0]))
+            assert len(loaded) == 1
+            assert loaded[0].title == 'Test Event'
+            print('Storage test passed')
+        
+        print('Integration tests passed!')
+        "
