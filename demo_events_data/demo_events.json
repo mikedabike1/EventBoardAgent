@@ -1,0 +1,39 @@
+{
+  "scraped_at": "2025-08-03T03:46:31.847655+00:00",
+  "total_events": 3,
+  "events": [
+    {
+      "title": "Friday Night Magic",
+      "game_system": "MTG",
+      "venue": "Card Kingdom",
+      "date": "2024-08-02",
+      "start_time": "19:00",
+      "source": "facebook",
+      "source_url": null,
+      "description": null,
+      "extracted_at": "2025-08-03T03:46:31.847342+00:00"
+    },
+    {
+      "title": "Warhammer Tournament",
+      "game_system": "Warhammer",
+      "venue": "Games Workshop",
+      "date": "2024-08-03",
+      "start_time": "10:00",
+      "source": "discord",
+      "source_url": null,
+      "description": null,
+      "extracted_at": "2025-08-03T03:46:31.847350+00:00"
+    },
+    {
+      "title": "D&D Adventure League",
+      "game_system": "D&D",
+      "venue": "Community Center",
+      "date": "2024-08-05",
+      "start_time": "18:30",
+      "source": "facebook",
+      "source_url": null,
+      "description": null,
+      "extracted_at": "2025-08-03T03:46:31.847353+00:00"
+    }
+  ]
+}

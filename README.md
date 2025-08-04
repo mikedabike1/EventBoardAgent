@@ -42,6 +42,10 @@ uv run jupyter lab
 
 5. Open `gaming_events_scraper.ipynb` and follow the notebook instructions.
 
+## Starting Coding Agents
+
+Run a VSCode task called "Start Claude Agents" (cmd + shift + P -> Tasks:Run Task)
+
 ## Configuration
 
 ### API Tokens (Optional)

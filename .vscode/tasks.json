@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Architect",
+      "type": "shell",
+      "command": "claude > You are Agent 1 - The Architect. Create MULTI_AGENT_PLAN.md and initialize the project structure.",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Builder",
+      "type": "shell",
+      "command": "claude > You are Agent 2. Read MULTI_AGENT_PLAN.md to get up to speed.",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Validator",
+      "type": "shell",
+      "command": "claude > You are Agent 3. Read MULTI_AGENT_PLAN.md to get up to speed.",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Scribe",
+      "type": "shell",
+      "command": "claude > You are Agent 4. Read MULTI_AGENT_PLAN.md to get up to speed.",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "label": "Start Claude Agents",
+      "dependsOn": ["Architect", "Builder", "Validator", "Scribe"],
+      "dependsOrder": "parallel"
+    }
+  ]
+}

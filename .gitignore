@@ -20,7 +20,6 @@ venv.bak/
 *.ipynb_checkpoints
 
 # IDEs
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -30,8 +29,7 @@ venv.bak/
 Thumbs.db
 
 # Project specific
-gaming_events_data/
-*.json
+gaming_events_data/*.json
 \!pyproject.toml
 
 # Testing
