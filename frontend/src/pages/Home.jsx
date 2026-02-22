@@ -39,9 +39,13 @@ export default function Home() {
       .finally(() => setLoading(false))
   }
 
-  // Load events on first render
+  // Load events on first render — use the fetch directly so no setState is
+  // called synchronously inside the effect body.
   useEffect(() => {
-    loadEvents(filters)
+    fetchEvents(filters)
+      .then(setEvents)
+      .catch((err) => setError(err.message || 'Could not load events.'))
+      .finally(() => setLoading(false))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSearch() {

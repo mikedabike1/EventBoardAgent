@@ -13,9 +13,6 @@ export default function StorePage() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    setLoading(true)
-    setError(null)
-
     Promise.all([
       fetchStores(),
       fetchEvents({ storeId: id }),

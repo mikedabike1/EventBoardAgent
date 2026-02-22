@@ -13,9 +13,6 @@ export default function GameSystemPage() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    setLoading(true)
-    setError(null)
-
     Promise.all([
       fetchGameSystems(),
       fetchEvents({ gameSystemId: id }),
