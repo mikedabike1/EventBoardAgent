@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { fetchEvents, fetchStores, fetchGameSystems } from '../api'
 import FilterBar from '../components/FilterBar'
 import EventList from '../components/EventList'
+import CalendarView from '../components/CalendarView'
 import SubscribeForm from '../components/SubscribeForm'
 
 const today = new Date().toISOString().split('T')[0]
@@ -12,6 +13,7 @@ export default function Home() {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [view, setView] = useState('list') // 'list' | 'calendar'
   const [filters, setFilters] = useState({
     storeId: null,
     gameSystemId: null,
@@ -72,17 +74,36 @@ export default function Home() {
         onSearch={handleSearch}
       />
 
-      {/* Results count */}
+      {/* View toggle + results count */}
       {!loading && !error && (
-        <p className="text-sm text-gray-500">
-          {events.length === 0
-            ? 'No events found'
-            : `${events.length} event${events.length === 1 ? '' : 's'} found`}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-500">
+            {events.length === 0
+              ? 'No events found'
+              : `${events.length} event${events.length === 1 ? '' : 's'} found`}
+          </p>
+          <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
+            <button
+              onClick={() => setView('list')}
+              className={`px-3 py-1.5 transition-colors ${view === 'list' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            >
+              ☰ List
+            </button>
+            <button
+              onClick={() => setView('calendar')}
+              className={`px-3 py-1.5 border-l border-gray-200 transition-colors ${view === 'calendar' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            >
+              📅 Calendar
+            </button>
+          </div>
+        </div>
       )}
 
-      {/* Event list */}
-      <EventList events={events} loading={loading} error={error} />
+      {/* Event list or calendar */}
+      {view === 'list'
+        ? <EventList events={events} loading={loading} error={error} />
+        : !loading && <CalendarView events={events} />
+      }
 
       {/* Subscribe */}
       {!loading && (
