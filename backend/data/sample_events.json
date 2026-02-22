@@ -1,0 +1,123 @@
+[
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Warhammer 40,000",
+    "title": "Friday Night 40K",
+    "date": "2026-03-06",
+    "time": "18:00",
+    "description": "Open play and league games. All experience levels welcome. Tables provided, bring your army!",
+    "source_url": "https://facebook.com/dragonsden/events/123456",
+    "source_type": "facebook",
+    "last_seen_at": "2026-02-20T12:00:00"
+  },
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Warhammer 40,000",
+    "title": "Friday Night 40K",
+    "date": "2026-03-13",
+    "time": "18:00",
+    "description": "Open play and league games. All experience levels welcome. Tables provided, bring your army!",
+    "source_url": "https://facebook.com/dragonsden/events/123457",
+    "source_type": "facebook",
+    "last_seen_at": "2026-02-20T12:00:00"
+  },
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Age of Sigmar",
+    "title": "AoS Sunday Casual",
+    "date": "2026-03-08",
+    "time": "12:00",
+    "description": "Casual matched play. Bring 1000pts. Terrain and mats provided. Pizza for everyone!",
+    "source_url": "https://discord.gg/dragonsden/events/789",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-21T09:00:00"
+  },
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Age of Sigmar",
+    "title": "AoS Monthly Tournament",
+    "date": "2026-03-22",
+    "time": "10:00",
+    "description": "2000pt matched play tournament. 5 rounds Swiss. Prizes for top 3. Pre-registration required.",
+    "source_url": "https://discord.gg/dragonsden/events/790",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-21T09:00:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Warhammer 40,000",
+    "title": "40K Tournament Qualifier",
+    "date": "2026-03-14",
+    "time": "10:00",
+    "description": "ITC format, 2000pts. Top 2 players advance to regional qualifier. Sign up required.",
+    "source_url": "https://thepaintedblade.com/events/q1-qualifier",
+    "source_type": "website",
+    "last_seen_at": "2026-02-22T08:30:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Horus Heresy",
+    "title": "Horus Heresy League Night",
+    "date": "2026-03-05",
+    "time": "17:30",
+    "description": "30K league continues. Round 2 of the Isstvan campaign. Narrative play, bring 2500pts.",
+    "source_url": "https://thepaintedblade.com/events/hh-league-r2",
+    "source_type": "website",
+    "last_seen_at": "2026-02-22T08:30:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Horus Heresy",
+    "title": "Horus Heresy League Night",
+    "date": "2026-03-19",
+    "time": "17:30",
+    "description": "30K league continues. Round 3 of the Isstvan campaign.",
+    "source_url": "https://thepaintedblade.com/events/hh-league-r3",
+    "source_type": "website",
+    "last_seen_at": "2026-02-22T08:30:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Bolt Action",
+    "title": "Bolt Action Campaign Night",
+    "date": "2026-03-11",
+    "time": "19:00",
+    "description": "Ongoing WW2 campaign. Round 4 — Battle of the Bulge scenario. New players can join at any point.",
+    "source_url": "https://facebook.com/fortresshobbies/posts/99988",
+    "source_type": "facebook",
+    "last_seen_at": "2026-02-19T15:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Bolt Action",
+    "title": "Bolt Action Campaign Night",
+    "date": "2026-03-25",
+    "time": "19:00",
+    "description": "Ongoing WW2 campaign. Round 5 — Market Garden scenario.",
+    "source_url": "https://facebook.com/fortresshobbies/posts/99989",
+    "source_type": "facebook",
+    "last_seen_at": "2026-02-19T15:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Kings of War",
+    "title": "KoW League Round 3",
+    "date": "2026-03-21",
+    "time": "13:00",
+    "description": "Round 3 of our spring Kings of War league. 1500pts Clash of Kings format. Bring painted armies!",
+    "source_url": "https://discord.gg/fortresshobbies/events/kow-r3",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-22T07:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Kings of War",
+    "title": "KoW Beginner Workshop",
+    "date": "2026-03-07",
+    "time": "14:00",
+    "description": "New to Kings of War? Learn the rules with demo games. Loaner armies available. Free to attend!",
+    "source_url": "https://discord.gg/fortresshobbies/events/kow-intro",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-22T07:00:00"
+  }
+]
