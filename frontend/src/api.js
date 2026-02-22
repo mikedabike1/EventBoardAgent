@@ -1,7 +1,11 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  // In dev: Vite's proxy forwards relative requests to localhost:8000.
+  // In production (served from FastAPI): relative URLs hit the same host,
+  // so the app works on any IP or domain without rebuilding.
+  // VITE_API_URL can still override this for external backends.
+  baseURL: import.meta.env.VITE_API_URL ?? '',
   headers: { 'Content-Type': 'application/json' },
 })
 

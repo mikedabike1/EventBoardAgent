@@ -1,11 +1,15 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from datetime import date
+from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from . import crud, schemas
@@ -33,11 +37,30 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ---------------------------------------------------------------------------
+# Serve the built frontend (dist/) as static files when it exists.
+# This lets the whole app be reached from a single port on the LAN.
+# ---------------------------------------------------------------------------
+
+_DIST = Path(__file__).parent.parent / "frontend" / "dist"
+
+if _DIST.is_dir():
+    app.mount("/assets", StaticFiles(directory=_DIST / "assets"), name="assets")
+
+    @app.get("/", include_in_schema=False)
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_spa(full_path: str = ""):
+        """Return index.html for every non-API route so React Router works."""
+        # Let actual API routes take priority — this catch-all only fires for
+        # paths that didn't match an earlier route.
+        index = _DIST / "index.html"
+        return FileResponse(index)
 
 
 # ---------------------------------------------------------------------------
