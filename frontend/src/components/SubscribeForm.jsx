@@ -8,7 +8,7 @@ export default function SubscribeForm({ stores, gameSystems }) {
   const [status, setStatus] = useState(null) // null | 'loading' | 'success' | 'error'
   const [errorMsg, setErrorMsg] = useState('')
 
-  function toggleId(list, setList, id) {
+  function toggleId(setList, id) {
     setList((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])
   }
 
@@ -77,7 +77,7 @@ export default function SubscribeForm({ stores, gameSystems }) {
                   <button
                     key={s.id}
                     type="button"
-                    onClick={() => toggleId(selectedStores, setSelectedStores, s.id)}
+                    onClick={() => toggleId(setSelectedStores, s.id)}
                     className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
                       checked
                         ? 'bg-purple-600 text-white border-purple-600'
@@ -102,7 +102,7 @@ export default function SubscribeForm({ stores, gameSystems }) {
                   <button
                     key={gs.id}
                     type="button"
-                    onClick={() => toggleId(selectedGames, setSelectedGames, gs.id)}
+                    onClick={() => toggleId(setSelectedGames, gs.id)}
                     className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
                       checked
                         ? 'bg-indigo-600 text-white border-indigo-600'

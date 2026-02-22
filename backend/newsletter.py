@@ -3,6 +3,7 @@ import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from html import escape
 
 from sqlalchemy.orm import Session
 
@@ -11,20 +12,32 @@ from .models import Event, Subscriber
 
 logger = logging.getLogger(__name__)
 
+# Read SMTP config once at import time so os.getenv isn't called per-email.
+_SMTP_HOST = os.getenv("SMTP_HOST", "localhost")
+_SMTP_PORT = int(os.getenv("SMTP_PORT", "1025"))
+_SMTP_USER = os.getenv("SMTP_USER", "")
+_SMTP_PASS = os.getenv("SMTP_PASS", "")
+_EMAIL_FROM = os.getenv("EMAIL_FROM", "noreply@wargameevents.local")
+
 
 def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
     rows = ""
     for e in events:
         date_str = e.date.strftime("%a, %b %d %Y")
-        time_str = e.start_time or "TBD"
+        # escape all user-supplied / crawled content before embedding in HTML
+        time_str = escape(e.start_time or "TBD")
+        game_name = escape(e.game_system.name)
+        store_name = escape(e.store.name)
+        title = escape(e.title)
+        description = escape(e.description or "")
         rows += f"""
         <tr style="border-bottom: 1px solid #e5e7eb;">
           <td style="padding: 10px 12px; white-space: nowrap;">{date_str}</td>
           <td style="padding: 10px 12px; white-space: nowrap;">{time_str}</td>
-          <td style="padding: 10px 12px; font-weight: 600; color: #7c3aed;">{e.game_system.name}</td>
-          <td style="padding: 10px 12px;">{e.store.name}</td>
-          <td style="padding: 10px 12px; font-weight: 500;">{e.title}</td>
-          <td style="padding: 10px 12px; color: #6b7280; font-size: 13px;">{e.description or ""}</td>
+          <td style="padding: 10px 12px; font-weight: 600; color: #7c3aed;">{game_name}</td>
+          <td style="padding: 10px 12px;">{store_name}</td>
+          <td style="padding: 10px 12px; font-weight: 500;">{title}</td>
+          <td style="padding: 10px 12px; color: #6b7280; font-size: 13px;">{description}</td>
         </tr>"""
 
     return f"""<!DOCTYPE html>
@@ -39,7 +52,7 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
   <div style="max-width: 700px; margin: 0 auto; background: white;
               border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <div style="background: #7c3aed; padding: 32px; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 24px;">🎲 Wargame Event Finder</h1>
+      <h1 style="color: white; margin: 0; font-size: 24px;">&#127922; Wargame Event Finder</h1>
       <p style="color: #ddd6fe; margin: 8px 0 0; font-size: 15px;">Your upcoming events for this month</p>
     </div>
     <div style="padding: 32px;">
@@ -63,7 +76,7 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
         </table>
       </div>
       <p style="color: #9ca3af; font-size: 13px; margin: 32px 0 0; text-align: center;">
-        You're receiving this because you subscribed at Wargame Event Finder.<br>
+        You&#39;re receiving this because you subscribed at Wargame Event Finder.<br>
         To unsubscribe or update preferences, reply to this email.
       </p>
     </div>
@@ -73,22 +86,16 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
 
 
 def send_email(to_addr: str, subject: str, html_body: str) -> None:
-    smtp_host = os.getenv("SMTP_HOST", "localhost")
-    smtp_port = int(os.getenv("SMTP_PORT", "1025"))
-    smtp_user = os.getenv("SMTP_USER", "")
-    smtp_pass = os.getenv("SMTP_PASS", "")
-    email_from = os.getenv("EMAIL_FROM", "noreply@wargameevents.local")
-
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = email_from
+    msg["From"] = _EMAIL_FROM
     msg["To"] = to_addr
     msg.attach(MIMEText(html_body, "html"))
 
-    with smtplib.SMTP(smtp_host, smtp_port) as smtp:
-        if smtp_user:
-            smtp.login(smtp_user, smtp_pass)
-        smtp.sendmail(email_from, [to_addr], msg.as_string())
+    with smtplib.SMTP(_SMTP_HOST, _SMTP_PORT) as smtp:
+        if _SMTP_USER:
+            smtp.login(_SMTP_USER, _SMTP_PASS)
+        smtp.sendmail(_EMAIL_FROM, [to_addr], msg.as_string())
 
 
 def run_newsletter(db: Session) -> dict:

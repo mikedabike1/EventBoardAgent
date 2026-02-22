@@ -1,12 +1,16 @@
 import json
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
-from sqlalchemy import or_
+from sqlalchemy import or_, update
 from sqlalchemy.orm import Session
 
 from .models import Event, GameSystem, Store, Subscriber
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 # ---------------------------------------------------------------------------
@@ -67,7 +71,7 @@ def get_events(
     skip: int = 0,
     limit: int = 100,
 ) -> list[Event]:
-    query = db.query(Event).filter(Event.is_expired == False)  # noqa: E712
+    query = db.query(Event).filter(Event.is_expired.is_(False))
 
     if store_id is not None:
         query = query.filter(Event.store_id == store_id)
@@ -92,7 +96,7 @@ def upsert_event(
     existing = db.query(Event).filter(Event.dedup_hash == record["dedup_hash"]).first()
 
     if existing:
-        existing.last_seen_at = record.get("last_seen_at") or datetime.utcnow()
+        existing.last_seen_at = record.get("last_seen_at") or _utcnow()
         existing.source_url = record.get("source_url", existing.source_url)
         existing.is_expired = False  # re-seen events are no longer expired
         return existing, False
@@ -106,7 +110,7 @@ def upsert_event(
         description=record.get("description"),
         source_url=record.get("source_url"),
         source_type=record.get("source_type"),
-        last_seen_at=record.get("last_seen_at") or datetime.utcnow(),
+        last_seen_at=record.get("last_seen_at") or _utcnow(),
         dedup_hash=record["dedup_hash"],
     )
     db.add(event)
@@ -115,15 +119,12 @@ def upsert_event(
 
 def expire_old_events(db: Session, days: int = 30) -> int:
     cutoff = date.today() - timedelta(days=days)
-    result = (
-        db.query(Event)
-        .filter(Event.date < cutoff, Event.is_expired == False)  # noqa: E712
-        .all()
+    result = db.execute(
+        update(Event)
+        .where(Event.date < cutoff, Event.is_expired.is_(False))
+        .values(is_expired=True)
     )
-    count = len(result)
-    for event in result:
-        event.is_expired = True
-    return count
+    return result.rowcount
 
 
 # ---------------------------------------------------------------------------
@@ -131,7 +132,7 @@ def expire_old_events(db: Session, days: int = 30) -> int:
 # ---------------------------------------------------------------------------
 
 def get_active_subscribers(db: Session) -> list[Subscriber]:
-    return db.query(Subscriber).filter(Subscriber.is_active == True).all()  # noqa: E712
+    return db.query(Subscriber).filter(Subscriber.is_active.is_(True)).all()
 
 
 def get_events_for_subscriber(db: Session, subscriber: Subscriber) -> list[Event]:
@@ -151,7 +152,7 @@ def get_events_for_subscriber(db: Session, subscriber: Subscriber) -> list[Event
         db.query(Event)
         .filter(
             or_(*conditions),
-            Event.is_expired == False,  # noqa: E712
+            Event.is_expired.is_(False),
             Event.date >= date.today(),
         )
         .order_by(Event.date.asc())

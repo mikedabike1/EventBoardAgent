@@ -29,28 +29,29 @@ export default function Home() {
       .catch(() => {})
   }, [])
 
-  // Load events with current filters
-  function loadEvents(activeFilters) {
+  // Shared async fetch — all setState calls happen in async callbacks so the
+  // lint rule (no synchronous setState in effects) is satisfied when called
+  // from the initial useEffect.
+  function fetchAndSetEvents(activeFilters) {
+    return fetchEvents(activeFilters)
+      .then(setEvents)
+      .catch((err) => setError(err.message || 'Could not load events.'))
+      .finally(() => setLoading(false))
+  }
+
+  // Called from user interaction (Search button) — safe to set loading state
+  // synchronously here because this is not inside an effect body.
+  function handleSearch() {
     setLoading(true)
     setError(null)
-    fetchEvents(activeFilters)
-      .then(setEvents)
-      .catch((err) => setError(err.message || 'Could not load events.'))
-      .finally(() => setLoading(false))
+    fetchAndSetEvents(filters)
   }
 
-  // Load events on first render — use the fetch directly so no setState is
-  // called synchronously inside the effect body.
+  // Initial load — call only the async helper so no setState runs synchronously
+  // inside the effect body.
   useEffect(() => {
-    fetchEvents(filters)
-      .then(setEvents)
-      .catch((err) => setError(err.message || 'Could not load events.'))
-      .finally(() => setLoading(false))
+    fetchAndSetEvents(filters)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  function handleSearch() {
-    loadEvents(filters)
-  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">

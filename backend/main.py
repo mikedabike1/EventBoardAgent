@@ -1,23 +1,34 @@
 import logging
+from contextlib import asynccontextmanager
 from datetime import date
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from . import crud, schemas
 from .database import create_tables, get_db
+from .importer import run_import
+from .newsletter import run_newsletter
 
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_tables()
+    yield
+
+
 app = FastAPI(
     title="Wargame Event Finder",
     description="API for discovering local miniature wargame events",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -27,11 +38,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def on_startup():
-    create_tables()
 
 
 # ---------------------------------------------------------------------------
@@ -89,13 +95,11 @@ def subscribe(payload: schemas.SubscribeIn, db: Session = Depends(get_db)):
 
 @app.post("/admin/import", tags=["admin"])
 def trigger_import(db: Session = Depends(get_db)):
-    from .importer import run_import
     return run_import(db)
 
 
 @app.post("/admin/newsletter", tags=["admin"])
 def trigger_newsletter(db: Session = Depends(get_db)):
-    from .newsletter import run_newsletter
     return run_newsletter(db)
 
 

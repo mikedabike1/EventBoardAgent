@@ -7,8 +7,8 @@ const api = axios.create({
 
 export const fetchEvents = (filters = {}) => {
   const params = {}
-  if (filters.storeId) params.store_id = filters.storeId
-  if (filters.gameSystemId) params.game_system_id = filters.gameSystemId
+  if (filters.storeId != null) params.store_id = filters.storeId
+  if (filters.gameSystemId != null) params.game_system_id = filters.gameSystemId
   if (filters.dateFrom) params.date_from = filters.dateFrom
   if (filters.dateTo) params.date_to = filters.dateTo
   if (filters.skip != null) params.skip = filters.skip

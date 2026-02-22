@@ -1,7 +1,7 @@
 import hashlib
 import json
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from sqlalchemy.orm import Session
@@ -48,9 +48,9 @@ def normalize_record(raw: dict) -> dict | None:
         try:
             record["last_seen_at"] = datetime.fromisoformat(record["last_seen_at"])
         except ValueError:
-            record["last_seen_at"] = datetime.utcnow()
+            record["last_seen_at"] = datetime.now(timezone.utc)
     else:
-        record["last_seen_at"] = datetime.utcnow()
+        record["last_seen_at"] = datetime.now(timezone.utc)
 
     return record
 
@@ -65,7 +65,7 @@ def run_import(db: Session, data_dir: Path = DATA_DIR) -> dict:
     files = sorted(data_dir.glob("*.json"))
     if not files:
         logger.warning("No JSON files found in %s", data_dir)
-        return {"processed": 0, "created": 0, "updated": 0, "expired": 0}
+        return {"processed": 0, "created": 0, "updated": 0, "expired": 0, "errors": 0}
 
     processed = created = updated = errors = 0
 
