@@ -2,10 +2,12 @@
 
 A central discovery hub for local miniature wargame events. Browse upcoming events by store and game system, subscribe to a monthly email newsletter, and keep the event database fresh with a flat-file import job.
 
+![CI](https://github.com/mikedabike1/EventBoardAgent/actions/workflows/ci.yml/badge.svg)
+
 ## Stack
 
 - **Backend**: Python 3.11+, FastAPI, SQLAlchemy, SQLite
-- **Frontend**: React 18, Vite, Tailwind CSS, React Router
+- **Frontend**: React 19, Vite, Tailwind CSS, React Router
 
 ---
 
@@ -91,6 +93,44 @@ Drop JSON files into `backend/data/`. Each file can be an array of event objects
 
 Events are deduplicated by a hash of `store_name + game_system + title + date`.
 Events older than 30 days are automatically expired on each import run.
+
+---
+
+## Linting
+
+CI runs automatically on every push and pull request. To run the same checks locally:
+
+### Backend — [ruff](https://docs.astral.sh/ruff/)
+
+```bash
+# install dev dependencies (includes ruff)
+pip install -r backend/requirements-dev.txt
+
+# check for errors
+ruff check backend/
+
+# auto-fix all fixable errors
+ruff check --fix backend/
+
+# check formatting (ruff replaces black)
+ruff format --check backend/
+
+# apply formatting
+ruff format backend/
+```
+
+Ruff is configured in `pyproject.toml`. Rules enabled: `E/W` (pycodestyle), `F` (pyflakes), `I` (isort), `UP` (pyupgrade), `B` (bugbear), `C4` (comprehensions), `SIM` (simplify).
+
+### Frontend — [ESLint](https://eslint.org/)
+
+```bash
+cd frontend
+
+# check for errors
+npm run lint
+```
+
+ESLint is configured in `frontend/eslint.config.js`. Rules include `eslint:recommended`, `react-hooks`, and `react-refresh`.
 
 ---
 

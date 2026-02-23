@@ -1,7 +1,7 @@
 import hashlib
 import json
 import logging
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from sqlalchemy.orm import Session
@@ -48,9 +48,9 @@ def normalize_record(raw: dict) -> dict | None:
         try:
             record["last_seen_at"] = datetime.fromisoformat(record["last_seen_at"])
         except ValueError:
-            record["last_seen_at"] = datetime.now(timezone.utc)
+            record["last_seen_at"] = datetime.now(UTC)
     else:
-        record["last_seen_at"] = datetime.now(timezone.utc)
+        record["last_seen_at"] = datetime.now(UTC)
 
     return record
 
