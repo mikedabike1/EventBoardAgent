@@ -1,7 +1,7 @@
 import json
 from datetime import date, datetime
 
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, Optional, field_validator
 
 
 class StoreOut(BaseModel):

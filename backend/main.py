@@ -1,12 +1,10 @@
-import csv
-import io
 import logging
 from contextlib import asynccontextmanager
 from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Query, UploadFile
+from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
