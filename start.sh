@@ -7,9 +7,13 @@ PORT=${1:-8000}
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 # ── 1. Detect LAN IP ─────────────────────────────────────────────────────────
-LAN_IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')
+# Try Linux-style, then macOS-style, then fall back to hostname
+LAN_IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || true)
 if [[ -z "$LAN_IP" ]]; then
-  LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+  LAN_IP=$(ipconfig getifaddr en0 2>/dev/null || true)
+fi
+if [[ -z "$LAN_IP" ]]; then
+  LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || true)
 fi
 if [[ -z "$LAN_IP" ]]; then
   echo "⚠  Could not detect LAN IP. You can still try http://$(hostname):$PORT"
@@ -22,20 +26,15 @@ cd "$ROOT/frontend"
 npm run build --silent
 echo "✓  Frontend built → frontend/dist/"
 
-# ── 3. Install backend deps if needed ────────────────────────────────────────
+# ── 3. Sync backend deps with uv ─────────────────────────────────────────────
 cd "$ROOT"
-if [[ ! -d ".venv" ]]; then
-  echo "▶  Creating Python virtual environment..."
-  python3 -m venv .venv
-fi
-# shellcheck disable=SC1091
-source .venv/bin/activate
-pip install -q -r backend/requirements.txt
+echo "▶  Syncing Python dependencies..."
+uv sync
 
 # ── 4. Import sample data if the DB is empty ─────────────────────────────────
 if [[ ! -f "events.db" ]]; then
   echo "▶  Seeding database with sample events..."
-  python3 -c "
+  uv run python -c "
 import sys; sys.path.insert(0, '.')
 from backend.database import create_tables, SessionLocal
 from backend.importer import run_import
@@ -58,4 +57,4 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 cd "$ROOT"
-python3 -m uvicorn backend.main:app --host 0.0.0.0 --port "$PORT"
+uv run uvicorn backend.main:app --host 0.0.0.0 --port "$PORT"

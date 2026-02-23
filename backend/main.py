@@ -44,26 +44,6 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------------
-# Serve the built frontend (dist/) as static files when it exists.
-# This lets the whole app be reached from a single port on the LAN.
-# ---------------------------------------------------------------------------
-
-_DIST = Path(__file__).parent.parent / "frontend" / "dist"
-
-if _DIST.is_dir():
-    app.mount("/assets", StaticFiles(directory=_DIST / "assets"), name="assets")
-
-    @app.get("/", include_in_schema=False)
-    @app.get("/{full_path:path}", include_in_schema=False)
-    def serve_spa(full_path: str = ""):
-        """Return index.html for every non-API route so React Router works."""
-        # Let actual API routes take priority — this catch-all only fires for
-        # paths that didn't match an earlier route.
-        index = _DIST / "index.html"
-        return FileResponse(index)
-
-
-# ---------------------------------------------------------------------------
 # Events
 # ---------------------------------------------------------------------------
 
@@ -129,3 +109,21 @@ def trigger_newsletter(db: Session = Depends(get_db)):
 @app.get("/health", tags=["meta"])
 def health():
     return {"status": "ok"}
+
+
+# ---------------------------------------------------------------------------
+# Serve the built frontend (dist/) as static files when it exists.
+# MUST be registered last so the catch-all doesn't shadow API routes above.
+# ---------------------------------------------------------------------------
+
+_DIST = Path(__file__).parent.parent / "frontend" / "dist"
+
+if _DIST.is_dir():
+    app.mount("/assets", StaticFiles(directory=_DIST / "assets"), name="assets")
+
+    @app.get("/", include_in_schema=False)
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_spa(full_path: str = ""):
+        """Return index.html for every non-API route so React Router works."""
+        index = _DIST / "index.html"
+        return FileResponse(index)

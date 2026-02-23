@@ -14,13 +14,11 @@ A central discovery hub for local miniature wargame events. Browse upcoming even
 ### Backend
 
 ```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+# Install uv if you don't have it: https://docs.astral.sh/uv/getting-started/installation/
+uv sync
 
 # Run the API (auto-creates events.db on first start)
-uvicorn main:app --reload --port 8000
+uv run uvicorn backend.main:app --reload --port 8000
 ```
 
 Visit **http://localhost:8000/docs** for the interactive Swagger UI.
@@ -100,7 +98,6 @@ EventBoardAgent/
 │   ├── crud.py          DB operations
 │   ├── importer.py      Flat file ingestion
 │   ├── newsletter.py    HTML email generator + sender
-│   ├── requirements.txt
 │   └── data/
 │       └── sample_events.json
 └── frontend/
