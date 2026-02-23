@@ -1,15 +1,13 @@
 import logging
-import os
 from contextlib import asynccontextmanager
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
 from . import crud, schemas
@@ -49,10 +47,10 @@ app.add_middleware(
 
 @app.get("/events", response_model=list[schemas.EventOut], tags=["events"])
 def list_events(
-    store_id: Optional[int] = Query(None, description="Filter by store ID"),
-    game_system_id: Optional[int] = Query(None, description="Filter by game system ID"),
-    date_from: Optional[date] = Query(None, description="Earliest event date (YYYY-MM-DD)"),
-    date_to: Optional[date] = Query(None, description="Latest event date (YYYY-MM-DD)"),
+    store_id: int | None = Query(None, description="Filter by store ID"),
+    game_system_id: int | None = Query(None, description="Filter by game system ID"),
+    date_from: date | None = Query(None, description="Earliest event date (YYYY-MM-DD)"),
+    date_to: date | None = Query(None, description="Latest event date (YYYY-MM-DD)"),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),

@@ -1,7 +1,6 @@
 import json
 import re
-from datetime import date, datetime, timedelta, timezone
-from typing import Optional
+from datetime import UTC, date, datetime, timedelta
 
 from sqlalchemy import or_, update
 from sqlalchemy.orm import Session
@@ -10,7 +9,7 @@ from .models import Event, GameSystem, Store, Subscriber
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 # ---------------------------------------------------------------------------
@@ -64,10 +63,10 @@ def get_or_create_game_system(db: Session, name: str) -> GameSystem:
 
 def get_events(
     db: Session,
-    store_id: Optional[int] = None,
-    game_system_id: Optional[int] = None,
-    date_from: Optional[date] = None,
-    date_to: Optional[date] = None,
+    store_id: int | None = None,
+    game_system_id: int | None = None,
+    date_from: date | None = None,
+    date_to: date | None = None,
     skip: int = 0,
     limit: int = 100,
 ) -> list[Event]:

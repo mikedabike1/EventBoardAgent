@@ -1,6 +1,5 @@
 import json
 from datetime import date, datetime
-from typing import Optional
 
 from pydantic import BaseModel, EmailStr, field_validator
 
@@ -8,11 +7,11 @@ from pydantic import BaseModel, EmailStr, field_validator
 class StoreOut(BaseModel):
     id: int
     name: str
-    city: Optional[str] = None
-    state: Optional[str] = None
-    website: Optional[str] = None
-    discord_url: Optional[str] = None
-    facebook_url: Optional[str] = None
+    city: str | None = None
+    state: str | None = None
+    website: str | None = None
+    discord_url: str | None = None
+    facebook_url: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -21,7 +20,7 @@ class GameSystemOut(BaseModel):
     id: int
     name: str
     slug: str
-    publisher: Optional[str] = None
+    publisher: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -30,11 +29,11 @@ class EventOut(BaseModel):
     id: int
     title: str
     date: date
-    start_time: Optional[str] = None
-    description: Optional[str] = None
-    source_url: Optional[str] = None
-    source_type: Optional[str] = None
-    last_seen_at: Optional[datetime] = None
+    start_time: str | None = None
+    description: str | None = None
+    source_url: str | None = None
+    source_type: str | None = None
+    last_seen_at: datetime | None = None
     store: StoreOut
     game_system: GameSystemOut
 
