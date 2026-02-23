@@ -44,6 +44,17 @@
     "last_seen_at": "2026-02-21T09:00:00"
   },
   {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Necromunda",
+    "title": "Necromunda Underhive Skirmish",
+    "date": "2026-03-18",
+    "time": "18:30",
+    "description": "Gang warfare in the underhive. Bring your gang (up to 1000 credits). Hired guns and Hangers-on welcome. New players start with a free gang build session.",
+    "source_url": "https://www.dragonsden-games.com/events/necromunda-march",
+    "source_type": "website",
+    "last_seen_at": "2026-02-22T14:00:00"
+  },
+  {
     "store_name": "The Painted Blade",
     "game_system": "Warhammer 40,000",
     "title": "40K Tournament Qualifier",
@@ -75,6 +86,28 @@
     "source_url": "https://thepaintedblade.com/events/hh-league-r3",
     "source_type": "website",
     "last_seen_at": "2026-02-22T08:30:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Kill Team",
+    "title": "Kill Team Open Day",
+    "date": "2026-03-28",
+    "time": "11:00",
+    "description": "Beginner-friendly Kill Team event. Demo games, free faction tasters, and prize draws throughout the day. No experience needed — all teams provided.",
+    "source_url": "https://www.eventbrite.com/e/kill-team-open-day-the-painted-blade-tickets-112233445",
+    "source_type": "eventbrite",
+    "last_seen_at": "2026-02-22T10:00:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Kill Team",
+    "title": "Kill Team Spring Doubles",
+    "date": "2026-03-15",
+    "time": "10:00",
+    "description": "Pairs tournament — one player runs Operations, the other runs the Dataslate. 100pt rosters. Pre-registration essential; limited to 16 teams.",
+    "source_url": "https://www.eventbrite.com/e/kill-team-spring-doubles-tickets-998877665",
+    "source_type": "eventbrite",
+    "last_seen_at": "2026-02-22T10:00:00"
   },
   {
     "store_name": "Fortress of Solitude Hobbies",
@@ -119,5 +152,49 @@
     "source_url": "https://discord.gg/fortresshobbies/events/kow-intro",
     "source_type": "discord",
     "last_seen_at": "2026-02-22T07:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Warmachine",
+    "title": "Warmachine Prime League Kickoff",
+    "date": "2026-03-10",
+    "time": "18:00",
+    "description": "Start of our 6-week Warmachine Prime league. 75pt lists. All factions welcome. Prizes at the end of the season.",
+    "source_url": "https://www.eventbrite.com/e/warmachine-prime-league-fortress-tickets-556677889",
+    "source_type": "eventbrite",
+    "last_seen_at": "2026-02-23T09:00:00"
+  },
+  {
+    "store_name": "Dice & Destiny",
+    "game_system": "Warhammer 40,000",
+    "title": "40K Casual Sunday",
+    "date": "2026-03-08",
+    "time": "11:00",
+    "description": "Relaxed open play. Any points level, any format. Terrain provided. Bring snacks and friends!",
+    "source_url": "https://discord.gg/dicedestiny/events/40k-sun",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-23T10:00:00"
+  },
+  {
+    "store_name": "Dice & Destiny",
+    "game_system": "Age of Sigmar",
+    "title": "AoS Grand Tournament Qualifier",
+    "date": "2026-03-29",
+    "time": "09:00",
+    "description": "Official GW GT qualifier. 2000pts, matched play, painted armies required. Top 4 qualify for Nationals. Early bird tickets available until March 1st.",
+    "source_url": "https://www.eventbrite.com/e/aos-grand-tournament-qualifier-dice-destiny-tickets-334455667",
+    "source_type": "eventbrite",
+    "last_seen_at": "2026-02-23T10:00:00"
+  },
+  {
+    "store_name": "Dice & Destiny",
+    "game_system": "Necromunda",
+    "title": "Necromunda Dominion Campaign Launch",
+    "date": "2026-03-12",
+    "time": "17:00",
+    "description": "Starting a new 8-week Dominion campaign. Create your gang, pick your territory, and fight for control of the hive. Up to 12 participants.",
+    "source_url": "https://www.diceanddestiny.co.uk/events/necromunda-dominion-spring26",
+    "source_type": "website",
+    "last_seen_at": "2026-02-23T10:00:00"
   }
 ]
