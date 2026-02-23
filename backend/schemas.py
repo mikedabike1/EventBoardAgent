@@ -41,6 +41,18 @@ class EventOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class EventIn(BaseModel):
+    store_name: str
+    game_system: str
+    title: str
+    date: date
+    time: Optional[str] = None
+    description: Optional[str] = None
+    source_url: Optional[str] = None
+    source_type: Optional[str] = None
+    last_seen_at: Optional[datetime] = None
+
+
 class SubscribeIn(BaseModel):
     email: EmailStr
     store_ids: list[int] = []
