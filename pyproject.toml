@@ -1,0 +1,46 @@
+[project]
+name = "eventboardagent"
+version = "0.1.0"
+description = "Wargame Event Finder — central discovery hub for local miniature wargame events"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.29.0",
+    "sqlalchemy>=2.0.0",
+    "pydantic[email]>=2.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "httpx",
+    "ruff",
+    "mypy",
+]
+
+[tool.ruff]
+src = ["backend"]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes (unused imports, undefined names, …)
+    "I",   # isort (import ordering)
+    "UP",  # pyupgrade (modernise syntax for target Python version)
+    "B",   # flake8-bugbear (likely bugs / design issues)
+    "C4",  # flake8-comprehensions (cleaner comprehensions)
+    "SIM", # flake8-simplify (simplifiable code)
+]
+ignore = [
+    "E501",   # line too long — handled by formatter when needed
+    "SIM108", # ternary-operator — sometimes less readable
+    "B008",   # Depends() in default args is idiomatic FastAPI dependency injection
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["backend"]

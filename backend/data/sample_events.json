@@ -1,0 +1,200 @@
+[
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Warhammer 40,000",
+    "title": "Friday Night 40K",
+    "date": "2026-03-06",
+    "time": "18:00",
+    "description": "Open play and league games. All experience levels welcome. Tables provided, bring your army!",
+    "source_url": "https://facebook.com/dragonsden/events/123456",
+    "source_type": "facebook",
+    "last_seen_at": "2026-02-20T12:00:00"
+  },
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Warhammer 40,000",
+    "title": "Friday Night 40K",
+    "date": "2026-03-13",
+    "time": "18:00",
+    "description": "Open play and league games. All experience levels welcome. Tables provided, bring your army!",
+    "source_url": "https://facebook.com/dragonsden/events/123457",
+    "source_type": "facebook",
+    "last_seen_at": "2026-02-20T12:00:00"
+  },
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Age of Sigmar",
+    "title": "AoS Sunday Casual",
+    "date": "2026-03-08",
+    "time": "12:00",
+    "description": "Casual matched play. Bring 1000pts. Terrain and mats provided. Pizza for everyone!",
+    "source_url": "https://discord.gg/dragonsden/events/789",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-21T09:00:00"
+  },
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Age of Sigmar",
+    "title": "AoS Monthly Tournament",
+    "date": "2026-03-22",
+    "time": "10:00",
+    "description": "2000pt matched play tournament. 5 rounds Swiss. Prizes for top 3. Pre-registration required.",
+    "source_url": "https://discord.gg/dragonsden/events/790",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-21T09:00:00"
+  },
+  {
+    "store_name": "Dragon's Den Games",
+    "game_system": "Necromunda",
+    "title": "Necromunda Underhive Skirmish",
+    "date": "2026-03-18",
+    "time": "18:30",
+    "description": "Gang warfare in the underhive. Bring your gang (up to 1000 credits). Hired guns and Hangers-on welcome. New players start with a free gang build session.",
+    "source_url": "https://www.dragonsden-games.com/events/necromunda-march",
+    "source_type": "website",
+    "last_seen_at": "2026-02-22T14:00:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Warhammer 40,000",
+    "title": "40K Tournament Qualifier",
+    "date": "2026-03-14",
+    "time": "10:00",
+    "description": "ITC format, 2000pts. Top 2 players advance to regional qualifier. Sign up required.",
+    "source_url": "https://thepaintedblade.com/events/q1-qualifier",
+    "source_type": "website",
+    "last_seen_at": "2026-02-22T08:30:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Horus Heresy",
+    "title": "Horus Heresy League Night",
+    "date": "2026-03-05",
+    "time": "17:30",
+    "description": "30K league continues. Round 2 of the Isstvan campaign. Narrative play, bring 2500pts.",
+    "source_url": "https://thepaintedblade.com/events/hh-league-r2",
+    "source_type": "website",
+    "last_seen_at": "2026-02-22T08:30:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Horus Heresy",
+    "title": "Horus Heresy League Night",
+    "date": "2026-03-19",
+    "time": "17:30",
+    "description": "30K league continues. Round 3 of the Isstvan campaign.",
+    "source_url": "https://thepaintedblade.com/events/hh-league-r3",
+    "source_type": "website",
+    "last_seen_at": "2026-02-22T08:30:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Kill Team",
+    "title": "Kill Team Open Day",
+    "date": "2026-03-28",
+    "time": "11:00",
+    "description": "Beginner-friendly Kill Team event. Demo games, free faction tasters, and prize draws throughout the day. No experience needed — all teams provided.",
+    "source_url": "https://www.eventbrite.com/e/kill-team-open-day-the-painted-blade-tickets-112233445",
+    "source_type": "eventbrite",
+    "last_seen_at": "2026-02-22T10:00:00"
+  },
+  {
+    "store_name": "The Painted Blade",
+    "game_system": "Kill Team",
+    "title": "Kill Team Spring Doubles",
+    "date": "2026-03-15",
+    "time": "10:00",
+    "description": "Pairs tournament — one player runs Operations, the other runs the Dataslate. 100pt rosters. Pre-registration essential; limited to 16 teams.",
+    "source_url": "https://www.eventbrite.com/e/kill-team-spring-doubles-tickets-998877665",
+    "source_type": "eventbrite",
+    "last_seen_at": "2026-02-22T10:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Bolt Action",
+    "title": "Bolt Action Campaign Night",
+    "date": "2026-03-11",
+    "time": "19:00",
+    "description": "Ongoing WW2 campaign. Round 4 — Battle of the Bulge scenario. New players can join at any point.",
+    "source_url": "https://facebook.com/fortresshobbies/posts/99988",
+    "source_type": "facebook",
+    "last_seen_at": "2026-02-19T15:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Bolt Action",
+    "title": "Bolt Action Campaign Night",
+    "date": "2026-03-25",
+    "time": "19:00",
+    "description": "Ongoing WW2 campaign. Round 5 — Market Garden scenario.",
+    "source_url": "https://facebook.com/fortresshobbies/posts/99989",
+    "source_type": "facebook",
+    "last_seen_at": "2026-02-19T15:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Kings of War",
+    "title": "KoW League Round 3",
+    "date": "2026-03-21",
+    "time": "13:00",
+    "description": "Round 3 of our spring Kings of War league. 1500pts Clash of Kings format. Bring painted armies!",
+    "source_url": "https://discord.gg/fortresshobbies/events/kow-r3",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-22T07:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Kings of War",
+    "title": "KoW Beginner Workshop",
+    "date": "2026-03-07",
+    "time": "14:00",
+    "description": "New to Kings of War? Learn the rules with demo games. Loaner armies available. Free to attend!",
+    "source_url": "https://discord.gg/fortresshobbies/events/kow-intro",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-22T07:00:00"
+  },
+  {
+    "store_name": "Fortress of Solitude Hobbies",
+    "game_system": "Warmachine",
+    "title": "Warmachine Prime League Kickoff",
+    "date": "2026-03-10",
+    "time": "18:00",
+    "description": "Start of our 6-week Warmachine Prime league. 75pt lists. All factions welcome. Prizes at the end of the season.",
+    "source_url": "https://www.eventbrite.com/e/warmachine-prime-league-fortress-tickets-556677889",
+    "source_type": "eventbrite",
+    "last_seen_at": "2026-02-23T09:00:00"
+  },
+  {
+    "store_name": "Dice & Destiny",
+    "game_system": "Warhammer 40,000",
+    "title": "40K Casual Sunday",
+    "date": "2026-03-08",
+    "time": "11:00",
+    "description": "Relaxed open play. Any points level, any format. Terrain provided. Bring snacks and friends!",
+    "source_url": "https://discord.gg/dicedestiny/events/40k-sun",
+    "source_type": "discord",
+    "last_seen_at": "2026-02-23T10:00:00"
+  },
+  {
+    "store_name": "Dice & Destiny",
+    "game_system": "Age of Sigmar",
+    "title": "AoS Grand Tournament Qualifier",
+    "date": "2026-03-29",
+    "time": "09:00",
+    "description": "Official GW GT qualifier. 2000pts, matched play, painted armies required. Top 4 qualify for Nationals. Early bird tickets available until March 1st.",
+    "source_url": "https://www.eventbrite.com/e/aos-grand-tournament-qualifier-dice-destiny-tickets-334455667",
+    "source_type": "eventbrite",
+    "last_seen_at": "2026-02-23T10:00:00"
+  },
+  {
+    "store_name": "Dice & Destiny",
+    "game_system": "Necromunda",
+    "title": "Necromunda Dominion Campaign Launch",
+    "date": "2026-03-12",
+    "time": "17:00",
+    "description": "Starting a new 8-week Dominion campaign. Create your gang, pick your territory, and fight for control of the hive. Up to 12 participants.",
+    "source_url": "https://www.diceanddestiny.co.uk/events/necromunda-dominion-spring26",
+    "source_type": "website",
+    "last_seen_at": "2026-02-23T10:00:00"
+  }
+]
