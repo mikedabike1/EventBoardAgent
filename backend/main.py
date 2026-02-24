@@ -45,6 +45,7 @@ app.add_middleware(
 # Events
 # ---------------------------------------------------------------------------
 
+
 @app.post("/events", response_model=schemas.EventOut, status_code=201, tags=["events"])
 def create_event(payload: schemas.EventIn, db: Session = Depends(get_db)):
     record = {
@@ -114,6 +115,7 @@ def list_events(
 # Stores
 # ---------------------------------------------------------------------------
 
+
 @app.get("/stores", response_model=list[schemas.StoreOut], tags=["stores"])
 def list_stores(db: Session = Depends(get_db)):
     return crud.get_stores(db)
@@ -122,6 +124,7 @@ def list_stores(db: Session = Depends(get_db)):
 # ---------------------------------------------------------------------------
 # Game Systems
 # ---------------------------------------------------------------------------
+
 
 @app.get("/games", response_model=list[schemas.GameSystemOut], tags=["games"])
 def list_game_systems(db: Session = Depends(get_db)):
@@ -132,7 +135,10 @@ def list_game_systems(db: Session = Depends(get_db)):
 # Subscriptions
 # ---------------------------------------------------------------------------
 
-@app.post("/subscribe", response_model=schemas.SubscribeOut, status_code=201, tags=["subscriptions"])
+
+@app.post(
+    "/subscribe", response_model=schemas.SubscribeOut, status_code=201, tags=["subscriptions"]
+)
 def subscribe(payload: schemas.SubscribeIn, db: Session = Depends(get_db)):
     sub = crud.create_or_update_subscriber(
         db, str(payload.email), payload.store_ids, payload.game_system_ids
@@ -145,6 +151,7 @@ def subscribe(payload: schemas.SubscribeIn, db: Session = Depends(get_db)):
 # ---------------------------------------------------------------------------
 # Admin (no auth in MVP — protect via network/reverse proxy in production)
 # ---------------------------------------------------------------------------
+
 
 @app.post("/admin/import", tags=["admin"])
 def trigger_import(db: Session = Depends(get_db)):

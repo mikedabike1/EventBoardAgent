@@ -16,6 +16,7 @@ def _utcnow() -> datetime:
 # Stores
 # ---------------------------------------------------------------------------
 
+
 def get_stores(db: Session) -> list[Store]:
     return db.query(Store).order_by(Store.name).all()
 
@@ -32,6 +33,7 @@ def get_or_create_store(db: Session, name: str) -> Store:
 # ---------------------------------------------------------------------------
 # Game Systems
 # ---------------------------------------------------------------------------
+
 
 def get_game_systems(db: Session) -> list[GameSystem]:
     return db.query(GameSystem).order_by(GameSystem.name).all()
@@ -61,6 +63,7 @@ def get_or_create_game_system(db: Session, name: str) -> GameSystem:
 # Events
 # ---------------------------------------------------------------------------
 
+
 def get_events(
     db: Session,
     store_id: int | None = None,
@@ -81,12 +84,7 @@ def get_events(
     if date_to is not None:
         query = query.filter(Event.date <= date_to)
 
-    return (
-        query.order_by(Event.date.asc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    return query.order_by(Event.date.asc()).offset(skip).limit(limit).all()
 
 
 def upsert_event(
@@ -129,6 +127,7 @@ def expire_old_events(db: Session, days: int = 30) -> int:
 # ---------------------------------------------------------------------------
 # Subscribers
 # ---------------------------------------------------------------------------
+
 
 def get_active_subscribers(db: Session) -> list[Subscriber]:
     return db.query(Subscriber).filter(Subscriber.is_active.is_(True)).all()

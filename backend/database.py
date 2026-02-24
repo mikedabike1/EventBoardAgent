@@ -25,4 +25,5 @@ def get_db():
 
 def create_tables():
     from . import models  # noqa: F401 - registers models with Base
+
     Base.metadata.create_all(bind=engine)
