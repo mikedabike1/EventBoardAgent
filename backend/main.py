@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
-from . import crud, schemas
+from . import databridge as crud, schemas
 from .database import create_tables, get_db
 from .importer import compute_dedup_hash, run_import
 from .newsletter import run_newsletter

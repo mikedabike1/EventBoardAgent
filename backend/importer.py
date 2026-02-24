@@ -6,7 +6,7 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from . import crud
+from . import databridge as crud
 
 logger = logging.getLogger(__name__)
 

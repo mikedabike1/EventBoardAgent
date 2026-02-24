@@ -1,7 +1,9 @@
 import json
 from datetime import date, datetime
 
-from pydantic import BaseModel, EmailStr, Optional, field_validator
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr, field_validator
 
 
 class LocationOut(BaseModel):
