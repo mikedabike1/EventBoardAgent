@@ -21,11 +21,15 @@ if [[ -z "$LAN_IP" ]]; then
 fi
 
 # ── 2. Build the frontend (relative base URL, no VITE_API_URL needed) ────────
-echo "▶  Building frontend..."
-cd "$ROOT/frontend"
-npm install
-npm run build --silent
-echo "✓  Frontend built → frontend/dist/"
+if [[ ! -d "$ROOT/frontend/dist" ]]; then
+  echo "▶  Building frontend..."
+  cd "$ROOT/frontend"
+  npm install
+  npm run build --silent
+  echo "✓  Frontend built → frontend/dist/"
+else
+  echo "✓  Frontend dist already present, skipping build."
+fi
 
 # ── 3. Sync backend deps with uv ─────────────────────────────────────────────
 cd "$ROOT"

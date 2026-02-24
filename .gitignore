@@ -10,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -214,5 +213,4 @@ __marimo__/
 
 # Frontend
 frontend/node_modules/
-frontend/dist/
 frontend/.env
