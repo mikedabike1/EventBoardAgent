@@ -1,8 +1,6 @@
 import json
 from datetime import date, datetime
 
-from typing import Optional
-
 from pydantic import BaseModel, EmailStr, field_validator
 
 
@@ -47,11 +45,11 @@ class EventIn(BaseModel):
     game_system: str
     title: str
     date: date
-    time: Optional[str] = None
-    description: Optional[str] = None
-    source_url: Optional[str] = None
-    source_type: Optional[str] = None
-    last_seen_at: Optional[datetime] = None
+    time: str | None = None
+    description: str | None = None
+    source_url: str | None = None
+    source_type: str | None = None
+    last_seen_at: datetime | None = None
 
 
 class SubscribeIn(BaseModel):
