@@ -23,6 +23,7 @@ fi
 # ── 2. Build the frontend (relative base URL, no VITE_API_URL needed) ────────
 echo "▶  Building frontend..."
 cd "$ROOT/frontend"
+npm install
 npm run build --silent
 echo "✓  Frontend built → frontend/dist/"
 
