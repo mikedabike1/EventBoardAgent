@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchEvents, fetchStores, fetchGameSystems } from '../api'
+import { fetchEvents, fetchLocations, fetchGameSystems } from '../api'
 import FilterBar from '../components/FilterBar'
 import EventList from '../components/EventList'
 import CalendarView from '../components/CalendarView'
@@ -8,24 +8,24 @@ import SubscribeForm from '../components/SubscribeForm'
 const today = new Date().toISOString().split('T')[0]
 
 export default function Home() {
-  const [stores, setStores] = useState([])
+  const [locations, setLocations] = useState([])
   const [gameSystems, setGameSystems] = useState([])
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [view, setView] = useState('list') // 'list' | 'calendar'
   const [filters, setFilters] = useState({
-    storeId: null,
+    locationId: null,
     gameSystemId: null,
     dateFrom: today,
     dateTo: null,
   })
 
-  // Load stores and game systems once on mount
+  // Load locations and game systems once on mount
   useEffect(() => {
-    Promise.all([fetchStores(), fetchGameSystems()])
-      .then(([s, gs]) => {
-        setStores(s)
+    Promise.all([fetchLocations(), fetchGameSystems()])
+      .then(([l, gs]) => {
+        setLocations(l)
         setGameSystems(gs)
       })
       .catch(() => {})
@@ -61,13 +61,13 @@ export default function Home() {
       <div className="text-center py-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Local Wargame Events</h1>
         <p className="text-gray-500 text-base">
-          Discover upcoming miniature wargaming events at stores near you.
+          Discover upcoming miniature wargaming events at locations near you.
         </p>
       </div>
 
       {/* Filters */}
       <FilterBar
-        stores={stores}
+        locations={locations}
         gameSystems={gameSystems}
         filters={filters}
         onChange={setFilters}
@@ -108,7 +108,7 @@ export default function Home() {
       {/* Subscribe */}
       {!loading && (
         <div className="pt-6 border-t border-gray-200">
-          <SubscribeForm stores={stores} gameSystems={gameSystems} />
+          <SubscribeForm locations={locations} gameSystems={gameSystems} />
         </div>
       )}
     </div>

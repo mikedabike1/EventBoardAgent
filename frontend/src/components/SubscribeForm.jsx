@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { subscribe } from '../api'
 
-export default function SubscribeForm({ stores, gameSystems }) {
+export default function SubscribeForm({ locations, gameSystems }) {
   const [email, setEmail] = useState('')
-  const [selectedStores, setSelectedStores] = useState([])
+  const [selectedLocations, setSelectedLocations] = useState([])
   const [selectedGames, setSelectedGames] = useState([])
   const [status, setStatus] = useState(null) // null | 'loading' | 'success' | 'error'
   const [errorMsg, setErrorMsg] = useState('')
@@ -18,10 +18,10 @@ export default function SubscribeForm({ stores, gameSystems }) {
     setStatus('loading')
     setErrorMsg('')
     try {
-      await subscribe(email, selectedStores, selectedGames)
+      await subscribe(email, selectedLocations, selectedGames)
       setStatus('success')
       setEmail('')
-      setSelectedStores([])
+      setSelectedLocations([])
       setSelectedGames([])
     } catch (err) {
       setStatus('error')
@@ -51,7 +51,7 @@ export default function SubscribeForm({ stores, gameSystems }) {
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <h2 className="text-lg font-bold text-gray-800 mb-1">📬 Get Monthly Event Emails</h2>
       <p className="text-sm text-gray-500 mb-5">
-        Choose which stores and game systems you care about. We'll send you a calendar every month.
+        Choose which locations and game systems you care about. We'll send you a calendar every month.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -67,24 +67,24 @@ export default function SubscribeForm({ stores, gameSystems }) {
           />
         </div>
 
-        {stores.length > 0 && (
+        {locations.length > 0 && (
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Stores (optional)</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">Locations (optional)</p>
             <div className="flex flex-wrap gap-2">
-              {stores.map((s) => {
-                const checked = selectedStores.includes(s.id)
+              {locations.map((l) => {
+                const checked = selectedLocations.includes(l.id)
                 return (
                   <button
-                    key={s.id}
+                    key={l.id}
                     type="button"
-                    onClick={() => toggleId(setSelectedStores, s.id)}
+                    onClick={() => toggleId(setSelectedLocations, l.id)}
                     className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
                       checked
                         ? 'bg-purple-600 text-white border-purple-600'
                         : 'border-gray-200 text-gray-600 hover:border-purple-400'
                     }`}
                   >
-                    {s.name}
+                    {l.name}
                   </button>
                 )
               })}

@@ -7,7 +7,7 @@ from html import escape
 
 from sqlalchemy.orm import Session
 
-from . import crud
+from . import databridge
 from .models import Event, Subscriber
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
         # escape all user-supplied / crawled content before embedding in HTML
         time_str = escape(e.start_time or "TBD")
         game_name = escape(e.game_system.name)
-        store_name = escape(e.store.name)
+        location_name = escape(e.location.name)
         title = escape(e.title)
         description = escape(e.description or "")
         rows += f"""
@@ -35,7 +35,7 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
           <td style="padding: 10px 12px; white-space: nowrap;">{date_str}</td>
           <td style="padding: 10px 12px; white-space: nowrap;">{time_str}</td>
           <td style="padding: 10px 12px; font-weight: 600; color: #7c3aed;">{game_name}</td>
-          <td style="padding: 10px 12px;">{store_name}</td>
+          <td style="padding: 10px 12px;">{location_name}</td>
           <td style="padding: 10px 12px; font-weight: 500;">{title}</td>
           <td style="padding: 10px 12px; color: #6b7280; font-size: 13px;">{description}</td>
         </tr>"""
@@ -66,7 +66,7 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
               <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Date</th>
               <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Time</th>
               <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Game</th>
-              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Store</th>
+              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Location</th>
               <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Event</th>
               <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Details</th>
             </tr>
@@ -99,11 +99,11 @@ def send_email(to_addr: str, subject: str, html_body: str) -> None:
 
 
 def run_newsletter(db: Session) -> dict:
-    subscribers = crud.get_active_subscribers(db)
+    subscribers = databridge.get_active_subscribers(db)
     sent = skipped = errors = 0
 
     for sub in subscribers:
-        events = crud.get_events_for_subscriber(db, sub)
+        events = databridge.get_events_for_subscriber(db, sub)
         if not events:
             skipped += 1
             continue

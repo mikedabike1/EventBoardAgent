@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route, Link, useParams } from 'react-router-dom'
 import Home from './pages/Home'
-import StorePage from './pages/StorePage'
+import LocationPage from './pages/LocationPage'
 import GameSystemPage from './pages/GameSystemPage'
 
 // Wrapper components supply a key based on the route param so that the detail
 // page fully remounts (fresh loading state) whenever the id changes.
-function StoreRoute() {
-  const { storeId } = useParams()
-  return <StorePage key={storeId} />
+function LocationRoute() {
+  const { locationId } = useParams()
+  return <LocationPage key={locationId} />
 }
 
 function GameSystemRoute() {
@@ -35,7 +35,7 @@ export default function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/stores/:storeId" element={<StoreRoute />} />
+            <Route path="/locations/:locationId" element={<LocationRoute />} />
             <Route path="/games/:gameSystemId" element={<GameSystemRoute />} />
           </Routes>
         </main>

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from . import crud
+from . import databridge as crud
 
 logger = logging.getLogger(__name__)
 
@@ -14,24 +14,24 @@ DATA_DIR = Path(__file__).parent / "data"
 EXPIRY_DAYS = 30
 
 
-def compute_dedup_hash(store_name: str, game_system: str, title: str, event_date: str) -> str:
-    raw = f"{store_name}|{game_system}|{title}|{event_date}".lower().strip()
+def compute_dedup_hash(location_name: str, game_system: str, title: str, event_date: str) -> str:
+    raw = f"{location_name}|{game_system}|{title}|{event_date}".lower().strip()
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
 def normalize_record(raw: dict) -> dict | None:
-    required = ["store_name", "game_system", "title", "date"]
+    required = ["location_name", "game_system", "title", "date"]
     for field in required:
         if not raw.get(field):
             logger.warning("Skipping record missing field '%s': %s", field, raw)
             return None
 
     record = dict(raw)
-    record["store_name"] = record["store_name"].strip()
+    record["location_name"] = record["location_name"].strip()
     record["game_system"] = record["game_system"].strip()
     record["title"] = record["title"].strip()
     record["dedup_hash"] = compute_dedup_hash(
-        record["store_name"],
+        record["location_name"],
         record["game_system"],
         record["title"],
         record["date"],
@@ -84,9 +84,9 @@ def run_import(db: Session, data_dir: Path = DATA_DIR) -> dict:
                 continue
 
             processed += 1
-            store = crud.get_or_create_store(db, record["store_name"])
+            location = crud.get_or_create_location(db, record["location_name"])
             game_system = crud.get_or_create_game_system(db, record["game_system"])
-            _, was_created = crud.upsert_event(db, record, store, game_system)
+            _, was_created = crud.upsert_event(db, record, location, game_system)
             if was_created:
                 created += 1
             else:

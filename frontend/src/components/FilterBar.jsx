@@ -1,4 +1,4 @@
-export default function FilterBar({ stores, gameSystems, filters, onChange, onSearch }) {
+export default function FilterBar({ locations, gameSystems, filters, onChange, onSearch }) {
   function handleChange(key, value) {
     onChange({ ...filters, [key]: value })
   }
@@ -24,20 +24,20 @@ export default function FilterBar({ stores, gameSystems, filters, onChange, onSe
           </select>
         </div>
 
-        {/* Store */}
+        {/* Location */}
         <div>
-          <label htmlFor="filter-store" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-            Store
+          <label htmlFor="filter-location" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+            Location
           </label>
           <select
-            id="filter-store"
+            id="filter-location"
             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-            value={filters.storeId || ''}
-            onChange={(e) => handleChange('storeId', e.target.value ? Number(e.target.value) : null)}
+            value={filters.locationId || ''}
+            onChange={(e) => handleChange('locationId', e.target.value ? Number(e.target.value) : null)}
           >
-            <option value="">All Stores</option>
-            {stores.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
+            <option value="">All Locations</option>
+            {locations.map((l) => (
+              <option key={l.id} value={l.id}>{l.name}</option>
             ))}
           </select>
         </div>
@@ -74,7 +74,7 @@ export default function FilterBar({ stores, gameSystems, filters, onChange, onSe
       <div className="mt-3 flex gap-2 justify-end">
         <button
           className="text-sm text-gray-500 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-          onClick={() => onChange({ storeId: null, gameSystemId: null, dateFrom: null, dateTo: null })}
+          onClick={() => onChange({ locationId: null, gameSystemId: null, dateFrom: null, dateTo: null })}
         >
           Clear
         </button>

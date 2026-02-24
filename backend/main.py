@@ -10,9 +10,10 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
-from . import crud, schemas
+from . import databridge as crud
+from . import schemas
 from .database import create_tables, get_db
-from .importer import run_import
+from .importer import compute_dedup_hash, run_import
 from .newsletter import run_newsletter
 
 load_dotenv()
@@ -45,9 +46,62 @@ app.add_middleware(
 # Events
 # ---------------------------------------------------------------------------
 
+
+@app.post("/events", response_model=schemas.EventOut, status_code=201, tags=["events"])
+def create_event(payload: schemas.EventIn, db: Session = Depends(get_db)):
+    record = {
+        "title": payload.title.strip(),
+        "date": payload.date,
+        "time": payload.time,
+        "description": payload.description,
+        "source_url": payload.source_url,
+        "source_type": payload.source_type,
+        "last_seen_at": payload.last_seen_at,
+        "dedup_hash": compute_dedup_hash(
+            payload.location_name, payload.game_system, payload.title, str(payload.date)
+        ),
+    }
+    location = crud.get_or_create_location(db, payload.location_name.strip())
+    game_system = crud.get_or_create_game_system(db, payload.game_system.strip())
+    event, _ = crud.upsert_event(db, record, location, game_system)
+    db.commit()
+    db.refresh(event)
+    return event
+
+
+@app.post("/events/batch", tags=["events"])
+def create_events_batch(payload: list[schemas.EventIn], db: Session = Depends(get_db)):
+    created = updated = errors = 0
+    for item in payload:
+        try:
+            record = {
+                "title": item.title.strip(),
+                "date": item.date,
+                "time": item.time,
+                "description": item.description,
+                "source_url": item.source_url,
+                "source_type": item.source_type,
+                "last_seen_at": item.last_seen_at,
+                "dedup_hash": compute_dedup_hash(
+                    item.location_name, item.game_system, item.title, str(item.date)
+                ),
+            }
+            location = crud.get_or_create_location(db, item.location_name.strip())
+            game_system = crud.get_or_create_game_system(db, item.game_system.strip())
+            _, was_created = crud.upsert_event(db, record, location, game_system)
+            if was_created:
+                created += 1
+            else:
+                updated += 1
+        except Exception:
+            errors += 1
+    db.commit()
+    return {"created": created, "updated": updated, "errors": errors}
+
+
 @app.get("/events", response_model=list[schemas.EventOut], tags=["events"])
 def list_events(
-    store_id: int | None = Query(None, description="Filter by store ID"),
+    location_id: int | None = Query(None, description="Filter by location ID"),
     game_system_id: int | None = Query(None, description="Filter by game system ID"),
     date_from: date | None = Query(None, description="Earliest event date (YYYY-MM-DD)"),
     date_to: date | None = Query(None, description="Latest event date (YYYY-MM-DD)"),
@@ -55,21 +109,23 @@ def list_events(
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
 ):
-    return crud.get_events(db, store_id, game_system_id, date_from, date_to, skip, limit)
+    return crud.get_events(db, location_id, game_system_id, date_from, date_to, skip, limit)
 
 
 # ---------------------------------------------------------------------------
-# Stores
+# Locations
 # ---------------------------------------------------------------------------
 
-@app.get("/stores", response_model=list[schemas.StoreOut], tags=["stores"])
-def list_stores(db: Session = Depends(get_db)):
-    return crud.get_stores(db)
+
+@app.get("/locations", response_model=list[schemas.LocationOut], tags=["locations"])
+def list_locations(db: Session = Depends(get_db)):
+    return crud.get_locations(db)
 
 
 # ---------------------------------------------------------------------------
 # Game Systems
 # ---------------------------------------------------------------------------
+
 
 @app.get("/games", response_model=list[schemas.GameSystemOut], tags=["games"])
 def list_game_systems(db: Session = Depends(get_db)):
@@ -80,10 +136,13 @@ def list_game_systems(db: Session = Depends(get_db)):
 # Subscriptions
 # ---------------------------------------------------------------------------
 
-@app.post("/subscribe", response_model=schemas.SubscribeOut, status_code=201, tags=["subscriptions"])
+
+@app.post(
+    "/subscribe", response_model=schemas.SubscribeOut, status_code=201, tags=["subscriptions"]
+)
 def subscribe(payload: schemas.SubscribeIn, db: Session = Depends(get_db)):
     sub = crud.create_or_update_subscriber(
-        db, str(payload.email), payload.store_ids, payload.game_system_ids
+        db, str(payload.email), payload.location_ids, payload.game_system_ids
     )
     db.commit()
     db.refresh(sub)
@@ -93,6 +152,7 @@ def subscribe(payload: schemas.SubscribeIn, db: Session = Depends(get_db)):
 # ---------------------------------------------------------------------------
 # Admin (no auth in MVP — protect via network/reverse proxy in production)
 # ---------------------------------------------------------------------------
+
 
 @app.post("/admin/import", tags=["admin"])
 def trigger_import(db: Session = Depends(get_db)):

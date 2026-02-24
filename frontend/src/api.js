@@ -11,7 +11,7 @@ const api = axios.create({
 
 export const fetchEvents = (filters = {}) => {
   const params = {}
-  if (filters.storeId != null) params.store_id = filters.storeId
+  if (filters.locationId != null) params.location_id = filters.locationId
   if (filters.gameSystemId != null) params.game_system_id = filters.gameSystemId
   if (filters.dateFrom) params.date_from = filters.dateFrom
   if (filters.dateTo) params.date_to = filters.dateTo
@@ -20,13 +20,13 @@ export const fetchEvents = (filters = {}) => {
   return api.get('/events', { params }).then((r) => r.data)
 }
 
-export const fetchStores = () => api.get('/stores').then((r) => r.data)
+export const fetchLocations = () => api.get('/locations').then((r) => r.data)
 
 export const fetchGameSystems = () => api.get('/games').then((r) => r.data)
 
-export const subscribe = (email, storeIds, gameSystemIds) =>
+export const subscribe = (email, locationIds, gameSystemIds) =>
   api
-    .post('/subscribe', { email, store_ids: storeIds, game_system_ids: gameSystemIds })
+    .post('/subscribe', { email, location_ids: locationIds, game_system_ids: gameSystemIds })
     .then((r) => r.data)
 
 export default api

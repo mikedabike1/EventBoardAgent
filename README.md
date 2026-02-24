@@ -23,7 +23,11 @@ uv sync
 uv run uvicorn backend.main:app --reload --port 8000
 ```
 
-Visit **http://localhost:8000/docs** for the interactive Swagger UI.
+| UI | URL |
+|---|---|
+| **Swagger UI** | http://localhost:8000/docs |
+| **ReDoc** | http://localhost:8000/redoc |
+| **OpenAPI JSON** | http://localhost:8000/openapi.json |
 
 ### Import sample events
 
@@ -52,9 +56,13 @@ For local email testing, use [Mailpit](https://mailpit.axllent.org/) (`SMTP_PORT
 
 ## API Endpoints
 
+> Interactive docs: **http://localhost:8000/docs**
+
 | Method | Path | Description |
 |---|---|---|
 | `GET` | `/events` | List events (filters: `store_id`, `game_system_id`, `date_from`, `date_to`) |
+| `POST` | `/events` | Create or update a single event (upserts by dedup hash) |
+| `POST` | `/events/batch` | Create or update multiple events; returns `{created, updated, errors}` |
 | `GET` | `/stores` | List all stores |
 | `GET` | `/games` | List all game systems |
 | `POST` | `/subscribe` | Subscribe to newsletter |

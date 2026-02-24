@@ -56,8 +56,8 @@ function DayPanel({ dateStr, events, onClose }) {
               <p className="font-medium text-gray-900 text-sm">{e.title}</p>
               <div className="flex flex-wrap gap-x-3 text-xs text-gray-500 mt-0.5">
                 {e.start_time && <span>{formatTime(e.start_time)}</span>}
-                <Link to={`/stores/${e.store.id}`} className="text-purple-600 hover:underline">
-                  {e.store.name}
+                <Link to={`/locations/${e.location.id}`} className="text-purple-600 hover:underline">
+                  {e.location.name}
                 </Link>
               </div>
               {e.description && (

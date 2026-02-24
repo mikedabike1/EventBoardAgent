@@ -43,10 +43,10 @@ export default function EventCard({ event }) {
             📅 {formatDate(event.date)}{event.start_time ? ` at ${event.start_time}` : ''}
           </span>
           <Link
-            to={`/stores/${event.store.id}`}
+            to={`/locations/${event.location.id}`}
             className="flex items-center gap-1 text-purple-600 hover:text-purple-800 font-medium"
           >
-            🏪 {event.store.name}
+            🏪 {event.location.name}
           </Link>
           <Link
             to={`/games/${event.game_system.id}`}
