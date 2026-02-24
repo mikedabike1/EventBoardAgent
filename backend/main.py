@@ -57,12 +57,12 @@ def create_event(payload: schemas.EventIn, db: Session = Depends(get_db)):
         "source_type": payload.source_type,
         "last_seen_at": payload.last_seen_at,
         "dedup_hash": compute_dedup_hash(
-            payload.store_name, payload.game_system, payload.title, str(payload.date)
+            payload.location_name, payload.game_system, payload.title, str(payload.date)
         ),
     }
-    store = crud.get_or_create_store(db, payload.store_name.strip())
+    location = crud.get_or_create_location(db, payload.location_name.strip())
     game_system = crud.get_or_create_game_system(db, payload.game_system.strip())
-    event, _ = crud.upsert_event(db, record, store, game_system)
+    event, _ = crud.upsert_event(db, record, location, game_system)
     db.commit()
     db.refresh(event)
     return event
@@ -82,12 +82,12 @@ def create_events_batch(payload: list[schemas.EventIn], db: Session = Depends(ge
                 "source_type": item.source_type,
                 "last_seen_at": item.last_seen_at,
                 "dedup_hash": compute_dedup_hash(
-                    item.store_name, item.game_system, item.title, str(item.date)
+                    item.location_name, item.game_system, item.title, str(item.date)
                 ),
             }
-            store = crud.get_or_create_store(db, item.store_name.strip())
+            location = crud.get_or_create_location(db, item.location_name.strip())
             game_system = crud.get_or_create_game_system(db, item.game_system.strip())
-            _, was_created = crud.upsert_event(db, record, store, game_system)
+            _, was_created = crud.upsert_event(db, record, location, game_system)
             if was_created:
                 created += 1
             else:
@@ -100,7 +100,7 @@ def create_events_batch(payload: list[schemas.EventIn], db: Session = Depends(ge
 
 @app.get("/events", response_model=list[schemas.EventOut], tags=["events"])
 def list_events(
-    store_id: int | None = Query(None, description="Filter by store ID"),
+    location_id: int | None = Query(None, description="Filter by location ID"),
     game_system_id: int | None = Query(None, description="Filter by game system ID"),
     date_from: date | None = Query(None, description="Earliest event date (YYYY-MM-DD)"),
     date_to: date | None = Query(None, description="Latest event date (YYYY-MM-DD)"),
@@ -108,17 +108,17 @@ def list_events(
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
 ):
-    return crud.get_events(db, store_id, game_system_id, date_from, date_to, skip, limit)
+    return crud.get_events(db, location_id, game_system_id, date_from, date_to, skip, limit)
 
 
 # ---------------------------------------------------------------------------
-# Stores
+# Locations
 # ---------------------------------------------------------------------------
 
 
-@app.get("/stores", response_model=list[schemas.StoreOut], tags=["stores"])
-def list_stores(db: Session = Depends(get_db)):
-    return crud.get_stores(db)
+@app.get("/locations", response_model=list[schemas.LocationOut], tags=["locations"])
+def list_locations(db: Session = Depends(get_db)):
+    return crud.get_locations(db)
 
 
 # ---------------------------------------------------------------------------
@@ -141,7 +141,7 @@ def list_game_systems(db: Session = Depends(get_db)):
 )
 def subscribe(payload: schemas.SubscribeIn, db: Session = Depends(get_db)):
     sub = crud.create_or_update_subscriber(
-        db, str(payload.email), payload.store_ids, payload.game_system_ids
+        db, str(payload.email), payload.location_ids, payload.game_system_ids
     )
     db.commit()
     db.refresh(sub)

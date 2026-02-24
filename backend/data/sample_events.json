@@ -1,6 +1,6 @@
 [
   {
-    "store_name": "Dragon's Den Games",
+    "location_name": "Dragon's Den Games",
     "game_system": "Warhammer 40,000",
     "title": "Friday Night 40K",
     "date": "2026-03-06",
@@ -11,7 +11,7 @@
     "last_seen_at": "2026-02-20T12:00:00"
   },
   {
-    "store_name": "Dragon's Den Games",
+    "location_name": "Dragon's Den Games",
     "game_system": "Warhammer 40,000",
     "title": "Friday Night 40K",
     "date": "2026-03-13",
@@ -22,7 +22,7 @@
     "last_seen_at": "2026-02-20T12:00:00"
   },
   {
-    "store_name": "Dragon's Den Games",
+    "location_name": "Dragon's Den Games",
     "game_system": "Age of Sigmar",
     "title": "AoS Sunday Casual",
     "date": "2026-03-08",
@@ -33,7 +33,7 @@
     "last_seen_at": "2026-02-21T09:00:00"
   },
   {
-    "store_name": "Dragon's Den Games",
+    "location_name": "Dragon's Den Games",
     "game_system": "Age of Sigmar",
     "title": "AoS Monthly Tournament",
     "date": "2026-03-22",
@@ -44,7 +44,7 @@
     "last_seen_at": "2026-02-21T09:00:00"
   },
   {
-    "store_name": "Dragon's Den Games",
+    "location_name": "Dragon's Den Games",
     "game_system": "Necromunda",
     "title": "Necromunda Underhive Skirmish",
     "date": "2026-03-18",
@@ -55,7 +55,7 @@
     "last_seen_at": "2026-02-22T14:00:00"
   },
   {
-    "store_name": "The Painted Blade",
+    "location_name": "The Painted Blade",
     "game_system": "Warhammer 40,000",
     "title": "40K Tournament Qualifier",
     "date": "2026-03-14",
@@ -66,7 +66,7 @@
     "last_seen_at": "2026-02-22T08:30:00"
   },
   {
-    "store_name": "The Painted Blade",
+    "location_name": "The Painted Blade",
     "game_system": "Horus Heresy",
     "title": "Horus Heresy League Night",
     "date": "2026-03-05",
@@ -77,7 +77,7 @@
     "last_seen_at": "2026-02-22T08:30:00"
   },
   {
-    "store_name": "The Painted Blade",
+    "location_name": "The Painted Blade",
     "game_system": "Horus Heresy",
     "title": "Horus Heresy League Night",
     "date": "2026-03-19",
@@ -88,7 +88,7 @@
     "last_seen_at": "2026-02-22T08:30:00"
   },
   {
-    "store_name": "The Painted Blade",
+    "location_name": "The Painted Blade",
     "game_system": "Kill Team",
     "title": "Kill Team Open Day",
     "date": "2026-03-28",
@@ -99,7 +99,7 @@
     "last_seen_at": "2026-02-22T10:00:00"
   },
   {
-    "store_name": "The Painted Blade",
+    "location_name": "The Painted Blade",
     "game_system": "Kill Team",
     "title": "Kill Team Spring Doubles",
     "date": "2026-03-15",
@@ -110,7 +110,7 @@
     "last_seen_at": "2026-02-22T10:00:00"
   },
   {
-    "store_name": "Fortress of Solitude Hobbies",
+    "location_name": "Fortress of Solitude Hobbies",
     "game_system": "Bolt Action",
     "title": "Bolt Action Campaign Night",
     "date": "2026-03-11",
@@ -121,7 +121,7 @@
     "last_seen_at": "2026-02-19T15:00:00"
   },
   {
-    "store_name": "Fortress of Solitude Hobbies",
+    "location_name": "Fortress of Solitude Hobbies",
     "game_system": "Bolt Action",
     "title": "Bolt Action Campaign Night",
     "date": "2026-03-25",
@@ -132,7 +132,7 @@
     "last_seen_at": "2026-02-19T15:00:00"
   },
   {
-    "store_name": "Fortress of Solitude Hobbies",
+    "location_name": "Fortress of Solitude Hobbies",
     "game_system": "Kings of War",
     "title": "KoW League Round 3",
     "date": "2026-03-21",
@@ -143,7 +143,7 @@
     "last_seen_at": "2026-02-22T07:00:00"
   },
   {
-    "store_name": "Fortress of Solitude Hobbies",
+    "location_name": "Fortress of Solitude Hobbies",
     "game_system": "Kings of War",
     "title": "KoW Beginner Workshop",
     "date": "2026-03-07",
@@ -154,7 +154,7 @@
     "last_seen_at": "2026-02-22T07:00:00"
   },
   {
-    "store_name": "Fortress of Solitude Hobbies",
+    "location_name": "Fortress of Solitude Hobbies",
     "game_system": "Warmachine",
     "title": "Warmachine Prime League Kickoff",
     "date": "2026-03-10",
@@ -165,7 +165,7 @@
     "last_seen_at": "2026-02-23T09:00:00"
   },
   {
-    "store_name": "Dice & Destiny",
+    "location_name": "Dice & Destiny",
     "game_system": "Warhammer 40,000",
     "title": "40K Casual Sunday",
     "date": "2026-03-08",
@@ -176,7 +176,7 @@
     "last_seen_at": "2026-02-23T10:00:00"
   },
   {
-    "store_name": "Dice & Destiny",
+    "location_name": "Dice & Destiny",
     "game_system": "Age of Sigmar",
     "title": "AoS Grand Tournament Qualifier",
     "date": "2026-03-29",
@@ -187,7 +187,7 @@
     "last_seen_at": "2026-02-23T10:00:00"
   },
   {
-    "store_name": "Dice & Destiny",
+    "location_name": "Dice & Destiny",
     "game_system": "Necromunda",
     "title": "Necromunda Dominion Campaign Launch",
     "date": "2026-03-12",

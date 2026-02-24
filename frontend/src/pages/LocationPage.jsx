@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { fetchEvents, fetchStores } from '../api'
+import { fetchEvents, fetchLocations } from '../api'
 import EventList from '../components/EventList'
 
-export default function StorePage() {
-  const { storeId } = useParams()
-  const id = Number(storeId)
+export default function LocationPage() {
+  const { locationId } = useParams()
+  const id = Number(locationId)
 
-  const [store, setStore] = useState(null)
+  const [location, setLocation] = useState(null)
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     Promise.all([
-      fetchStores(),
-      fetchEvents({ storeId: id }),
+      fetchLocations(),
+      fetchEvents({ locationId: id }),
     ])
-      .then(([stores, evts]) => {
-        setStore(stores.find((s) => s.id === id) || null)
+      .then(([locations, evts]) => {
+        setLocation(locations.find((l) => l.id === id) || null)
         setEvents(evts)
       })
       .catch((err) => setError(err.message || 'Could not load data.'))
@@ -31,16 +31,16 @@ export default function StorePage() {
         ← Back to all events
       </Link>
 
-      {store ? (
+      {location ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h1 className="text-2xl font-bold text-gray-900">🏪 {store.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">🏪 {location.name}</h1>
           <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-500">
-            {store.city && store.state && (
-              <span>📍 {store.city}, {store.state}</span>
+            {location.city && location.state && (
+              <span>📍 {location.city}, {location.state}</span>
             )}
-            {store.website && (
+            {location.website && (
               <a
-                href={store.website}
+                href={location.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-purple-600 hover:text-purple-800"
@@ -48,9 +48,9 @@ export default function StorePage() {
                 🌐 Website
               </a>
             )}
-            {store.discord_url && (
+            {location.discord_url && (
               <a
-                href={store.discord_url}
+                href={location.discord_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-indigo-600 hover:text-indigo-800"
@@ -58,9 +58,9 @@ export default function StorePage() {
                 💬 Discord
               </a>
             )}
-            {store.facebook_url && (
+            {location.facebook_url && (
               <a
-                href={store.facebook_url}
+                href={location.facebook_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800"
@@ -72,7 +72,7 @@ export default function StorePage() {
         </div>
       ) : (
         !loading && (
-          <h1 className="text-2xl font-bold text-gray-900">Store #{storeId}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Location #{locationId}</h1>
         )
       )}
 

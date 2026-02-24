@@ -4,8 +4,8 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 
-class Store(Base):
-    __tablename__ = "stores"
+class Location(Base):
+    __tablename__ = "locations"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False, index=True)
@@ -16,7 +16,7 @@ class Store(Base):
     facebook_url = Column(String)
     created_at = Column(DateTime, default=func.now())
 
-    events = relationship("Event", back_populates="store")
+    events = relationship("Event", back_populates="location")
 
 
 class GameSystem(Base):
@@ -35,7 +35,7 @@ class Event(Base):
     __tablename__ = "events"
 
     id = Column(Integer, primary_key=True, index=True)
-    store_id = Column(Integer, ForeignKey("stores.id"), nullable=False)
+    location_id = Column(Integer, ForeignKey("locations.id"), nullable=False)
     game_system_id = Column(Integer, ForeignKey("game_systems.id"), nullable=False)
     title = Column(String, nullable=False)
     date = Column(Date, nullable=False, index=True)
@@ -49,7 +49,7 @@ class Event(Base):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
-    store = relationship("Store", back_populates="events")
+    location = relationship("Location", back_populates="events")
     game_system = relationship("GameSystem", back_populates="events")
 
 
@@ -58,7 +58,7 @@ class Subscriber(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, nullable=False, index=True)
-    store_ids = Column(Text, default="[]")
+    location_ids = Column(Text, default="[]")
     game_system_ids = Column(Text, default="[]")
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=func.now())

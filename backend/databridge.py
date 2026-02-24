@@ -5,7 +5,7 @@ from datetime import UTC, date, datetime, timedelta
 from sqlalchemy import or_, update
 from sqlalchemy.orm import Session
 
-from .models import Event, GameSystem, Store, Subscriber
+from .models import Event, GameSystem, Location, Subscriber
 
 
 def _utcnow() -> datetime:
@@ -13,21 +13,21 @@ def _utcnow() -> datetime:
 
 
 # ---------------------------------------------------------------------------
-# Stores
+# Locations
 # ---------------------------------------------------------------------------
 
 
-def get_stores(db: Session) -> list[Store]:
-    return db.query(Store).order_by(Store.name).all()
+def get_locations(db: Session) -> list[Location]:
+    return db.query(Location).order_by(Location.name).all()
 
 
-def get_or_create_store(db: Session, name: str) -> Store:
-    store = db.query(Store).filter(Store.name == name).first()
-    if not store:
-        store = Store(name=name)
-        db.add(store)
+def get_or_create_location(db: Session, name: str) -> Location:
+    location = db.query(Location).filter(Location.name == name).first()
+    if not location:
+        location = Location(name=name)
+        db.add(location)
         db.flush()
-    return store
+    return location
 
 
 # ---------------------------------------------------------------------------
@@ -66,7 +66,7 @@ def get_or_create_game_system(db: Session, name: str) -> GameSystem:
 
 def get_events(
     db: Session,
-    store_id: int | None = None,
+    location_id: int | None = None,
     game_system_id: int | None = None,
     date_from: date | None = None,
     date_to: date | None = None,
@@ -75,8 +75,8 @@ def get_events(
 ) -> list[Event]:
     query = db.query(Event).filter(Event.is_expired.is_(False))
 
-    if store_id is not None:
-        query = query.filter(Event.store_id == store_id)
+    if location_id is not None:
+        query = query.filter(Event.location_id == location_id)
     if game_system_id is not None:
         query = query.filter(Event.game_system_id == game_system_id)
     if date_from is not None:
@@ -88,7 +88,7 @@ def get_events(
 
 
 def upsert_event(
-    db: Session, record: dict, store: Store, game_system: GameSystem
+    db: Session, record: dict, location: Location, game_system: GameSystem
 ) -> tuple[Event, bool]:
     existing = db.query(Event).filter(Event.dedup_hash == record["dedup_hash"]).first()
 
@@ -99,7 +99,7 @@ def upsert_event(
         return existing, False
 
     event = Event(
-        store_id=store.id,
+        location_id=location.id,
         game_system_id=game_system.id,
         title=record["title"],
         date=record["date"],
@@ -134,15 +134,15 @@ def get_active_subscribers(db: Session) -> list[Subscriber]:
 
 
 def get_events_for_subscriber(db: Session, subscriber: Subscriber) -> list[Event]:
-    store_ids = json.loads(subscriber.store_ids or "[]")
+    location_ids = json.loads(subscriber.location_ids or "[]")
     game_system_ids = json.loads(subscriber.game_system_ids or "[]")
 
-    if not store_ids and not game_system_ids:
+    if not location_ids and not game_system_ids:
         return []
 
     conditions = []
-    if store_ids:
-        conditions.append(Event.store_id.in_(store_ids))
+    if location_ids:
+        conditions.append(Event.location_id.in_(location_ids))
     if game_system_ids:
         conditions.append(Event.game_system_id.in_(game_system_ids))
 
@@ -159,17 +159,17 @@ def get_events_for_subscriber(db: Session, subscriber: Subscriber) -> list[Event
 
 
 def create_or_update_subscriber(
-    db: Session, email: str, store_ids: list[int], game_system_ids: list[int]
+    db: Session, email: str, location_ids: list[int], game_system_ids: list[int]
 ) -> Subscriber:
     sub = db.query(Subscriber).filter(Subscriber.email == email).first()
     if sub:
-        sub.store_ids = json.dumps(store_ids)
+        sub.location_ids = json.dumps(location_ids)
         sub.game_system_ids = json.dumps(game_system_ids)
         sub.is_active = True
     else:
         sub = Subscriber(
             email=email,
-            store_ids=json.dumps(store_ids),
+            location_ids=json.dumps(location_ids),
             game_system_ids=json.dumps(game_system_ids),
         )
         db.add(sub)

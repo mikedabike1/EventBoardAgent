@@ -4,7 +4,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, EmailStr, Optional, field_validator
 
 
-class StoreOut(BaseModel):
+class LocationOut(BaseModel):
     id: int
     name: str
     city: str | None = None
@@ -34,14 +34,14 @@ class EventOut(BaseModel):
     source_url: str | None = None
     source_type: str | None = None
     last_seen_at: datetime | None = None
-    store: StoreOut
+    location: LocationOut
     game_system: GameSystemOut
 
     model_config = {"from_attributes": True}
 
 
 class EventIn(BaseModel):
-    store_name: str
+    location_name: str
     game_system: str
     title: str
     date: date
@@ -54,18 +54,18 @@ class EventIn(BaseModel):
 
 class SubscribeIn(BaseModel):
     email: EmailStr
-    store_ids: list[int] = []
+    location_ids: list[int] = []
     game_system_ids: list[int] = []
 
 
 class SubscribeOut(BaseModel):
     id: int
     email: str
-    store_ids: list[int]
+    location_ids: list[int]
     game_system_ids: list[int]
     is_active: bool
 
-    @field_validator("store_ids", "game_system_ids", mode="before")
+    @field_validator("location_ids", "game_system_ids", mode="before")
     @classmethod
     def parse_json_list(cls, v):
         if isinstance(v, str):
