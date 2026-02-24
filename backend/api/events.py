@@ -77,4 +77,3 @@ def list_events(
     db: Session = Depends(get_db),
 ):
     return databridge.get_events(db, location_id, game_system_id, date_from, date_to, skip, limit)
-
