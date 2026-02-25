@@ -14,8 +14,10 @@ DATA_DIR = Path(__file__).parent / "data"
 EXPIRY_DAYS = 30
 
 
-def compute_dedup_hash(location_name: str, game_system: str, title: str, event_date: str) -> str:
-    raw = f"{location_name}|{game_system}|{title}|{event_date}".lower().strip()
+def compute_dedup_hash(
+    location_name: str, game_system: str, title: str, event_date: str, time: str | None = None
+) -> str:
+    raw = f"{location_name}|{game_system}|{title}|{event_date}|{time or ''}".lower().strip()
     return hashlib.sha256(raw.encode()).hexdigest()
 
 

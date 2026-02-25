@@ -58,7 +58,11 @@ def create_event(payload: schemas.EventIn, db: Session = Depends(get_db)):
         "source_type": payload.source_type,
         "last_seen_at": payload.last_seen_at,
         "dedup_hash": compute_dedup_hash(
-            payload.location_name, payload.game_system, payload.title, str(payload.date)
+            payload.location_name,
+            payload.game_system,
+            payload.title,
+            str(payload.date),
+            payload.time,
         ),
     }
     location = crud.get_or_create_location(db, payload.location_name.strip())
@@ -83,7 +87,7 @@ def create_events_batch(payload: list[schemas.EventIn], db: Session = Depends(ge
                 "source_type": item.source_type,
                 "last_seen_at": item.last_seen_at,
                 "dedup_hash": compute_dedup_hash(
-                    item.location_name, item.game_system, item.title, str(item.date)
+                    item.location_name, item.game_system, item.title, str(item.date), item.time
                 ),
             }
             location = crud.get_or_create_location(db, item.location_name.strip())
