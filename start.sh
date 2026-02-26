@@ -24,7 +24,7 @@ fi
 if [[ ! -d "$ROOT/frontend/dist" ]]; then
   echo "▶  Building frontend..."
   cd "$ROOT/frontend"
-  npm install --include=dev
+  npm install
   npm run build --silent
   echo "✓  Frontend built → frontend/dist/"
 else
