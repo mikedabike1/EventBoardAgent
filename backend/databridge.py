@@ -67,7 +67,7 @@ def get_or_create_game_system(db: Session, name: str) -> GameSystem:
 def get_events(
     db: Session,
     location_id: int | None = None,
-    game_system_id: int | None = None,
+    game_system_ids: list[int] | None = None,
     date_from: date | None = None,
     date_to: date | None = None,
     skip: int = 0,
@@ -77,8 +77,8 @@ def get_events(
 
     if location_id is not None:
         query = query.filter(Event.location_id == location_id)
-    if game_system_id is not None:
-        query = query.filter(Event.game_system_id == game_system_id)
+    if game_system_ids:
+        query = query.filter(Event.game_system_id.in_(game_system_ids))
     if date_from is not None:
         query = query.filter(Event.date >= date_from)
     if date_to is not None:

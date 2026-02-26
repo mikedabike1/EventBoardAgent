@@ -1,6 +1,21 @@
+import { useEffect, useState } from 'react'
+import { fetchLocations, fetchGameSystems } from '../api'
 import SubscribeForm from './SubscribeForm'
 
-export default function SubscribeModal({ locations, gameSystems, onClose }) {
+export default function SubscribeModal({ onClose }) {
+  const [locations, setLocations] = useState([])
+  const [gameSystems, setGameSystems] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([fetchLocations(), fetchGameSystems()])
+      .then(([l, gs]) => {
+        setLocations(l)
+        setGameSystems(gs)
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -18,7 +33,11 @@ export default function SubscribeModal({ locations, gameSystems, onClose }) {
           ×
         </button>
         <div className="p-6">
-          <SubscribeForm locations={locations} gameSystems={gameSystems} />
+          {loading ? (
+            <div className="py-8 text-center text-sm text-gray-400">Loading…</div>
+          ) : (
+            <SubscribeForm locations={locations} gameSystems={gameSystems} />
+          )}
         </div>
       </div>
     </div>

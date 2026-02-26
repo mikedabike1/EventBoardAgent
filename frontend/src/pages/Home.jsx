@@ -3,7 +3,6 @@ import { fetchEvents, fetchLocations, fetchGameSystems } from '../api'
 import FilterBar from '../components/FilterBar'
 import EventList from '../components/EventList'
 import CalendarView from '../components/CalendarView'
-import SubscribeModal from '../components/SubscribeModal'
 
 const today = new Date().toISOString().split('T')[0]
 
@@ -14,10 +13,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [view, setView] = useState('list') // 'list' | 'calendar'
-  const [showSubscribeModal, setShowSubscribeModal] = useState(false)
   const [filters, setFilters] = useState({
     locationId: null,
-    gameSystemId: null,
+    gameSystemIds: [],
     dateFrom: today,
     dateTo: null,
   })
@@ -67,7 +65,7 @@ export default function Home() {
         onSearch={handleSearch}
       />
 
-      {/* View toggle + results count + subscribe button */}
+      {/* View toggle + results count */}
       {!loading && !error && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
@@ -75,27 +73,19 @@ export default function Home() {
               ? 'No events found'
               : `${events.length} event${events.length === 1 ? '' : 's'} found`}
           </p>
-          <div className="flex items-center gap-3">
+          <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
             <button
-              onClick={() => setShowSubscribeModal(true)}
-              className="text-sm px-3 py-1.5 rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50 transition-colors font-medium"
+              onClick={() => setView('list')}
+              className={`px-3 py-1.5 transition-colors ${view === 'list' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
             >
-              ✉ Get Email Updates
+              ☰ List
             </button>
-            <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
-              <button
-                onClick={() => setView('list')}
-                className={`px-3 py-1.5 transition-colors ${view === 'list' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
-              >
-                ☰ List
-              </button>
-              <button
-                onClick={() => setView('calendar')}
-                className={`px-3 py-1.5 border-l border-gray-200 transition-colors ${view === 'calendar' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
-              >
-                📅 Calendar
-              </button>
-            </div>
+            <button
+              onClick={() => setView('calendar')}
+              className={`px-3 py-1.5 border-l border-gray-200 transition-colors ${view === 'calendar' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            >
+              📅 Calendar
+            </button>
           </div>
         </div>
       )}
@@ -105,15 +95,6 @@ export default function Home() {
         ? <EventList events={events} loading={loading} error={error} />
         : !loading && <CalendarView events={events} />
       }
-
-      {/* Subscribe modal */}
-      {showSubscribeModal && (
-        <SubscribeModal
-          locations={locations}
-          gameSystems={gameSystems}
-          onClose={() => setShowSubscribeModal(false)}
-        />
-      )}
     </div>
   )
 }

@@ -106,14 +106,14 @@ def create_events_batch(payload: list[schemas.EventIn], db: Session = Depends(ge
 @app.get("/events", response_model=list[schemas.EventOut], tags=["events"])
 def list_events(
     location_id: int | None = Query(None, description="Filter by location ID"),
-    game_system_id: int | None = Query(None, description="Filter by game system ID"),
+    game_system_ids: list[int] = Query(default=[], description="Filter by game system ID(s)"),
     date_from: date | None = Query(None, description="Earliest event date (YYYY-MM-DD)"),
     date_to: date | None = Query(None, description="Latest event date (YYYY-MM-DD)"),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
 ):
-    return crud.get_events(db, location_id, game_system_id, date_from, date_to, skip, limit)
+    return crud.get_events(db, location_id, game_system_ids, date_from, date_to, skip, limit)
 
 
 # ---------------------------------------------------------------------------
