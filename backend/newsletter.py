@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import smtplib
@@ -12,15 +13,40 @@ from .models import Event, Subscriber
 
 logger = logging.getLogger(__name__)
 
-# Read SMTP config once at import time so os.getenv isn't called per-email.
+# Read config once at import time so os.getenv isn't called per-email.
 _SMTP_HOST = os.getenv("SMTP_HOST", "localhost")
 _SMTP_PORT = int(os.getenv("SMTP_PORT", "1025"))
 _SMTP_USER = os.getenv("SMTP_USER", "")
 _SMTP_PASS = os.getenv("SMTP_PASS", "")
 _EMAIL_FROM = os.getenv("EMAIL_FROM", "noreply@wargameevents.local")
+# Base URL of the website (no trailing slash).  Used to build deep-link URLs
+# inside emails so recipients land with their filters already applied.
+# e.g. "https://eventboard.onrender.com"  — leave blank to omit the CTA.
+_SITE_URL = os.getenv("SITE_URL", "").rstrip("/")
 
 
-def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
+def _build_filter_url(subscriber: Subscriber) -> str:
+    """Return a website URL pre-filtered for this subscriber's preferences.
+
+    The frontend filter bar supports one location_id and multiple
+    game_system_ids, so we encode the subscriber's first location (if any)
+    plus all of their game system IDs.  Returns an empty string when
+    SITE_URL is not configured.
+    """
+    if not _SITE_URL:
+        return ""
+    location_ids = json.loads(subscriber.location_ids or "[]")
+    game_system_ids = json.loads(subscriber.game_system_ids or "[]")
+    parts: list[str] = []
+    if location_ids:
+        parts.append(f"location_id={location_ids[0]}")
+    for gs_id in game_system_ids:
+        parts.append(f"game_system_ids={gs_id}")
+    qs = "&".join(parts)
+    return f"{_SITE_URL}{'?' + qs if qs else ''}"
+
+
+def build_html_email(subscriber: Subscriber, events: list[Event], filter_url: str = "") -> str:
     rows = ""
     for e in events:
         date_str = e.date.strftime("%a, %b %d %Y")
@@ -75,7 +101,19 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
           </tbody>
         </table>
       </div>
-      <p style="color: #9ca3af; font-size: 13px; margin: 32px 0 0; text-align: center;">
+      {
+        f'''<div style="text-align: center; margin: 32px 0 0;">
+        <a href="{filter_url}"
+           style="display: inline-block; padding: 12px 28px; background: #7c3aed;
+                  color: white; border-radius: 8px; text-decoration: none;
+                  font-weight: 600; font-size: 15px;">
+          View your events on the website &#8594;
+        </a>
+      </div>'''
+        if filter_url
+        else ""
+    }
+      <p style="color: #9ca3af; font-size: 13px; margin: 24px 0 0; text-align: center;">
         You&#39;re receiving this because you subscribed at Wargame Event Finder.<br>
         To unsubscribe or update preferences, reply to this email.
       </p>
@@ -108,7 +146,8 @@ def run_newsletter(db: Session) -> dict:
             skipped += 1
             continue
         try:
-            html = build_html_email(sub, events)
+            filter_url = _build_filter_url(sub)
+            html = build_html_email(sub, events, filter_url=filter_url)
             send_email(sub.email, "Your Monthly Wargame Events", html)
             sent += 1
             logger.info("Newsletter sent to %s (%d events)", sub.email, len(events))
