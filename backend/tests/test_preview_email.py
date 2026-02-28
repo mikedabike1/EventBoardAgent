@@ -208,6 +208,11 @@ class TestBuildCalendarHtml:
         assert html.count("<tr>") >= 5  # 1 header row + 4 week rows
 
     def test_events_from_other_months_excluded(self):
-        event_march = _mock_event(title="March Event", date_val=date(2026, 3, 1))
+        event_march = _mock_event(
+            title="March Event",
+            game_name="UniqueMarchSystem",
+            date_val=date(2026, 3, 1),
+        )
         html = self._call([event_march], year=2026, month=2)
         assert "March Event" not in html
+        assert "UniqueMarchSystem" not in html

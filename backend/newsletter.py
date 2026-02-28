@@ -45,7 +45,7 @@ def _build_calendar_html(events: list[Event], year: int, month: int) -> str:
         if d not in events_by_date:
             events_by_date[d] = []
         events_by_date[d].append(e)
-        if e.game_system.id not in seen_gs:
+        if e.date.year == year and e.date.month == month and e.game_system.id not in seen_gs:
             seen_gs[e.game_system.id] = e.game_system.name
 
     # Build grid cells (Sunday-first)
