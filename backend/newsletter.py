@@ -85,6 +85,63 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
 </html>"""
 
 
+def build_preview_email(events: list[Event]) -> str:
+    rows = ""
+    for e in events:
+        date_str = e.date.strftime("%a, %b %d %Y")
+        time_str = escape(e.start_time or "TBD")
+        game_name = escape(e.game_system.name)
+        location_name = escape(e.location.name)
+        title = escape(e.title)
+        description = escape(e.description or "")
+        rows += f"""
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 10px 12px; white-space: nowrap;">{date_str}</td>
+          <td style="padding: 10px 12px; white-space: nowrap;">{time_str}</td>
+          <td style="padding: 10px 12px; font-weight: 600; color: #7c3aed;">{game_name}</td>
+          <td style="padding: 10px 12px;">{location_name}</td>
+          <td style="padding: 10px 12px; font-weight: 500;">{title}</td>
+          <td style="padding: 10px 12px; color: #6b7280; font-size: 13px;">{description}</td>
+        </tr>"""
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Events This Month</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+             background: #f9fafb; margin: 0; padding: 32px 16px;">
+  <div style="max-width: 700px; margin: 0 auto; background: white;
+              border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="background: #7c3aed; padding: 32px; text-align: center;">
+      <h1 style="color: white; margin: 0; font-size: 24px;">&#127922; Wargame Event Finder</h1>
+      <p style="color: #ddd6fe; margin: 8px 0 0; font-size: 15px;">All Events This Month</p>
+    </div>
+    <div style="padding: 32px;">
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <thead>
+            <tr style="background: #f3f4f6; text-align: left;">
+              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Date</th>
+              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Time</th>
+              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Game</th>
+              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Location</th>
+              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Event</th>
+              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Details</th>
+            </tr>
+          </thead>
+          <tbody>{rows}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>"""
+
+
 def send_email(to_addr: str, subject: str, html_body: str) -> None:
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
