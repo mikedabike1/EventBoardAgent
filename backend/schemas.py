@@ -1,5 +1,6 @@
 import json
 from datetime import date, datetime
+from typing import Literal
 
 from pydantic import BaseModel, EmailStr, field_validator
 
@@ -34,6 +35,8 @@ class EventOut(BaseModel):
     source_url: str | None = None
     source_type: str | None = None
     last_seen_at: datetime | None = None
+    submitted_by: str | None = None
+    submission_status: str | None = None
     location: LocationOut
     game_system: GameSystemOut
 
@@ -50,6 +53,21 @@ class EventIn(BaseModel):
     source_url: str | None = None
     source_type: str | None = None
     last_seen_at: datetime | None = None
+
+
+class EventSubmitIn(BaseModel):
+    location_name: str
+    game_system: str
+    title: str
+    date: date
+    time: str | None = None
+    description: str | None = None
+    source_url: str | None = None
+    source_type: str | None = None
+
+
+class ReviewAction(BaseModel):
+    action: Literal["approve", "reject"]
 
 
 class SubscribeIn(BaseModel):

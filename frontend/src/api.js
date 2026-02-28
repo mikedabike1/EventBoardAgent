@@ -29,4 +29,17 @@ export const subscribe = (email, locationIds, gameSystemIds) =>
     .post('/subscribe', { email, location_ids: locationIds, game_system_ids: gameSystemIds })
     .then((r) => r.data)
 
+const authHeader = (token) => ({ Authorization: `Bearer ${token}` })
+
+export const submitEvent = (token, data) =>
+  api.post('/events/submit', data, { headers: authHeader(token) }).then((r) => r.data)
+
+export const getPendingEvents = (token) =>
+  api.get('/admin/review', { headers: authHeader(token) }).then((r) => r.data)
+
+export const reviewEvent = (token, id, action) =>
+  api
+    .patch(`/admin/events/${id}/review`, { action }, { headers: authHeader(token) })
+    .then((r) => r.data)
+
 export default api

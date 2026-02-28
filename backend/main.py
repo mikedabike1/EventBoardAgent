@@ -6,7 +6,7 @@ from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Header, HTTPException, Query
+from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 
 from . import databridge as crud
 from . import schemas
+from .auth import require_admin, require_user
 from .database import create_tables, get_db
 from .importer import compute_dedup_hash, run_import
 from .newsletter import build_preview_email, run_newsletter
@@ -24,16 +25,11 @@ _WEBSITE_URL = os.getenv("WEBSITE_URL", "http://localhost:8000/")
 
 logging.basicConfig(level=logging.INFO)
 
-# Optional shared secret for /admin/* endpoints.
-# Set ADMIN_SECRET in the environment to require callers to pass
-# X-Admin-Secret: <value> on every admin request.
-# Leave unset (or empty) to keep admin endpoints open — useful for local dev.
-_ADMIN_SECRET = os.getenv("ADMIN_SECRET", "")
-
-
-def _verify_admin(x_admin_secret: str | None = Header(None)) -> None:
-    if _ADMIN_SECRET and x_admin_secret != _ADMIN_SECRET:
-        raise HTTPException(status_code=403, detail="Forbidden")
+_ALLOWED_ORIGINS = [
+    o.strip()
+    for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:8000").split(",")
+    if o.strip()
+]
 
 
 @asynccontextmanager
@@ -51,8 +47,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=_ALLOWED_ORIGINS,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -62,7 +58,13 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 
 
-@app.post("/events", response_model=schemas.EventOut, status_code=201, tags=["events"])
+@app.post(
+    "/events",
+    response_model=schemas.EventOut,
+    status_code=201,
+    tags=["events"],
+    dependencies=[Depends(require_admin)],
+)
 def create_event(payload: schemas.EventIn, db: Session = Depends(get_db)):
     record = {
         "title": payload.title.strip(),
@@ -88,7 +90,7 @@ def create_event(payload: schemas.EventIn, db: Session = Depends(get_db)):
     return event
 
 
-@app.post("/events/batch", tags=["events"])
+@app.post("/events/batch", tags=["events"], dependencies=[Depends(require_admin)])
 def create_events_batch(payload: list[schemas.EventIn], db: Session = Depends(get_db)):
     created = updated = errors = 0
     for item in payload:
@@ -116,6 +118,23 @@ def create_events_batch(payload: list[schemas.EventIn], db: Session = Depends(ge
             errors += 1
     db.commit()
     return {"created": created, "updated": updated, "errors": errors}
+
+
+@app.post(
+    "/events/submit",
+    response_model=schemas.EventOut,
+    status_code=201,
+    tags=["events"],
+)
+def submit_event(
+    data: schemas.EventSubmitIn,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(require_user),
+):
+    event = crud.create_user_event(db, data, user_sub=payload["sub"])
+    db.commit()
+    db.refresh(event)
+    return event
 
 
 @app.get("/events", response_model=list[schemas.EventOut], tags=["events"])
@@ -169,21 +188,21 @@ def subscribe(payload: schemas.SubscribeIn, db: Session = Depends(get_db)):
 
 
 # ---------------------------------------------------------------------------
-# Admin (protected by _verify_admin — set ADMIN_SECRET env var in production)
+# Admin (protected by require_admin — JWT with admin role or X-Admin-Secret header)
 # ---------------------------------------------------------------------------
 
 
-@app.post("/admin/import", tags=["admin"], dependencies=[Depends(_verify_admin)])
+@app.post("/admin/import", tags=["admin"], dependencies=[Depends(require_admin)])
 def trigger_import(db: Session = Depends(get_db)):
     return run_import(db)
 
 
-@app.post("/admin/newsletter", tags=["admin"], dependencies=[Depends(_verify_admin)])
+@app.post("/admin/newsletter", tags=["admin"], dependencies=[Depends(require_admin)])
 def trigger_newsletter(db: Session = Depends(get_db)):
     return run_newsletter(db)
 
 
-@app.get("/admin/preview-email", tags=["admin"])
+@app.get("/admin/preview-email", tags=["admin"], dependencies=[Depends(require_admin)])
 def preview_email(db: Session = Depends(get_db)):
     today = date.today()
     date_from = today.replace(day=1)
@@ -197,6 +216,26 @@ def preview_email(db: Session = Depends(get_db)):
         media_type="text/html",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+@app.get("/admin/review", response_model=list[schemas.EventOut], tags=["admin"])
+def get_review_queue(
+    db: Session = Depends(get_db), _: dict = Depends(require_admin)
+):
+    return crud.get_pending_events(db)
+
+
+@app.patch("/admin/events/{event_id}/review", response_model=schemas.EventOut, tags=["admin"])
+def review_event(
+    event_id: int,
+    action: schemas.ReviewAction,
+    db: Session = Depends(get_db),
+    _: dict = Depends(require_admin),
+):
+    event = crud.review_event(db, event_id, action.action)
+    db.commit()
+    db.refresh(event)
+    return event
 
 
 @app.get("/health", tags=["meta"])

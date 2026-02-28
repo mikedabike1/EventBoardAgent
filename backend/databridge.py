@@ -6,6 +6,7 @@ from sqlalchemy import or_, update
 from sqlalchemy.orm import Session
 
 from .models import Event, GameSystem, Location, Subscriber
+from .schemas import EventSubmitIn
 
 
 def _utcnow() -> datetime:
@@ -112,6 +113,76 @@ def upsert_event(
     )
     db.add(event)
     return event, True
+
+
+def create_user_event(db: Session, data: EventSubmitIn, user_sub: str) -> Event:
+    """Create an event submitted by a logged-in user, pending admin review."""
+    from .importer import compute_dedup_hash
+
+    location = get_or_create_location(db, data.location_name.strip())
+    game_system = get_or_create_game_system(db, data.game_system.strip())
+    dedup_hash = compute_dedup_hash(
+        data.location_name, data.game_system, data.title, str(data.date), data.time
+    )
+    record = {
+        "title": data.title.strip(),
+        "date": data.date,
+        "time": data.time,
+        "description": data.description,
+        "source_url": data.source_url,
+        "source_type": data.source_type,
+        "dedup_hash": dedup_hash,
+    }
+    existing = db.query(Event).filter(Event.dedup_hash == dedup_hash).first()
+    if existing:
+        existing.last_seen_at = _utcnow()
+        existing.submitted_by = user_sub
+        existing.submission_status = "pending_review"
+        existing.is_expired = False
+        return existing
+
+    event = Event(
+        location_id=location.id,
+        game_system_id=game_system.id,
+        title=record["title"],
+        date=record["date"],
+        start_time=record.get("time"),
+        description=record.get("description"),
+        source_url=record.get("source_url"),
+        source_type=record.get("source_type"),
+        last_seen_at=_utcnow(),
+        dedup_hash=dedup_hash,
+        submitted_by=user_sub,
+        submission_status="pending_review",
+    )
+    db.add(event)
+    return event
+
+
+def get_pending_events(db: Session) -> list[Event]:
+    """Return events awaiting admin review, ordered by date."""
+    return (
+        db.query(Event)
+        .filter(Event.submission_status == "pending_review")
+        .order_by(Event.date.asc())
+        .all()
+    )
+
+
+def review_event(db: Session, event_id: int, action: str) -> Event:
+    """Approve or reject a user-submitted event."""
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=404, detail="Event not found")
+    if action == "approve":
+        event.submission_status = "approved"
+    else:
+        event.submission_status = "rejected"
+        event.is_expired = True
+    db.flush()
+    return event
 
 
 def expire_old_events(db: Session, days: int = 30) -> int:

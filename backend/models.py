@@ -49,6 +49,9 @@ class Event(Base):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
+    submitted_by = Column(String, nullable=True)
+    submission_status = Column(String, nullable=True)
+
     location = relationship("Location", back_populates="events")
     game_system = relationship("GameSystem", back_populates="events")
 
