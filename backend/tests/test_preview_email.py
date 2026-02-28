@@ -22,10 +22,12 @@ from backend.newsletter import build_preview_email
 def _mock_event(
     title="Friday Night 40K",
     game_name="Warhammer 40,000",
+    game_system_id=1,
     location_name="Game Vault",
     date_val=date(2026, 2, 15),
     start_time="18:00",
     description="Come play!",
+    source_url="https://example.com/event",
 ):
     event = MagicMock()
     event.title = title
@@ -33,7 +35,9 @@ def _mock_event(
     event.start_time = start_time
     event.description = description
     event.game_system.name = game_name
+    event.game_system.id = game_system_id
     event.location.name = location_name
+    event.source_url = source_url
     return event
 
 
@@ -44,37 +48,47 @@ def _mock_event(
 
 class TestBuildPreviewEmail:
     def test_returns_html_string(self):
-        html = build_preview_email([_mock_event()])
+        html = build_preview_email([_mock_event()], website_url="https://test.example.com")
         assert isinstance(html, str)
         assert html.strip().startswith("<!DOCTYPE html>")
 
     def test_contains_heading(self):
-        html = build_preview_email([_mock_event()])
+        html = build_preview_email([_mock_event()], website_url="https://test.example.com")
         assert "All Events This Month" in html
 
     def test_includes_event_title(self):
-        html = build_preview_email([_mock_event(title="Saturday Skirmish")])
+        html = build_preview_email(
+            [_mock_event(title="Saturday Skirmish")], website_url="https://test.example.com"
+        )
         assert "Saturday Skirmish" in html
 
     def test_includes_game_system(self):
-        html = build_preview_email([_mock_event(game_name="Age of Sigmar")])
+        html = build_preview_email(
+            [_mock_event(game_name="Age of Sigmar")], website_url="https://test.example.com"
+        )
         assert "Age of Sigmar" in html
 
     def test_includes_location(self):
-        html = build_preview_email([_mock_event(location_name="Dragon's Den")])
+        html = build_preview_email(
+            [_mock_event(location_name="Dragon's Den")], website_url="https://test.example.com"
+        )
         assert "Dragon&#x27;s Den" in html  # html.escape applied
 
     def test_includes_date(self):
-        html = build_preview_email([_mock_event(date_val=date(2026, 2, 15))])
+        html = build_preview_email(
+            [_mock_event(date_val=date(2026, 2, 15))], website_url="https://test.example.com"
+        )
         assert "Feb 15 2026" in html
 
     def test_empty_events_still_returns_html(self):
-        html = build_preview_email([])
+        html = build_preview_email([], website_url="https://test.example.com")
         assert "<table" in html
         assert "<tbody>" in html
 
     def test_missing_start_time_shows_tbd(self):
-        html = build_preview_email([_mock_event(start_time=None)])
+        html = build_preview_email(
+            [_mock_event(start_time=None)], website_url="https://test.example.com"
+        )
         assert "TBD" in html
 
     def test_multiple_events_all_appear(self):
@@ -82,7 +96,7 @@ class TestBuildPreviewEmail:
             _mock_event(title="Event Alpha"),
             _mock_event(title="Event Beta"),
         ]
-        html = build_preview_email(events)
+        html = build_preview_email(events, website_url="https://test.example.com")
         assert "Event Alpha" in html
         assert "Event Beta" in html
 

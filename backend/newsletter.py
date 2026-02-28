@@ -85,7 +85,7 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
 </html>"""
 
 
-def build_preview_email(events: list[Event]) -> str:
+def build_preview_email(events: list[Event], website_url: str) -> str:
     rows = ""
     for e in events:
         date_str = e.date.strftime("%a, %b %d %Y")

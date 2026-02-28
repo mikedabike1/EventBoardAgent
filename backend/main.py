@@ -1,5 +1,6 @@
 import calendar
 import logging
+import os
 from contextlib import asynccontextmanager
 from datetime import date
 from pathlib import Path
@@ -18,6 +19,8 @@ from .importer import compute_dedup_hash, run_import
 from .newsletter import build_preview_email, run_newsletter
 
 load_dotenv()
+
+_WEBSITE_URL = os.getenv("WEBSITE_URL", "http://localhost:8000/")
 
 logging.basicConfig(level=logging.INFO)
 
@@ -176,7 +179,7 @@ def preview_email(db: Session = Depends(get_db)):
     last_day = calendar.monthrange(today.year, today.month)[1]
     date_to = today.replace(day=last_day)
     events = crud.get_events(db, date_from=date_from, date_to=date_to, limit=500)
-    html = build_preview_email(events)
+    html = build_preview_email(events, website_url=_WEBSITE_URL)
     filename = f"preview-email-{today.strftime('%Y-%m')}.html"
     return Response(
         content=html,
