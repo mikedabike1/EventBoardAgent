@@ -1,0 +1,67 @@
+# Render Blueprint — EventBoardAgent
+# https://render.com/docs/blueprint-spec
+#
+# Deploy both services by connecting this repo in the Render dashboard and
+# selecting "Blueprint" as the deploy method.  Fill in the env vars marked
+# `sync: false` in the Render dashboard (they are intentionally left blank
+# here so secrets never land in source control).
+
+services:
+  # ── Web Service (FastAPI backend + built React frontend) ──────────────────
+  - type: web
+    name: eventboard-api
+    runtime: python
+    buildCommand: pip install uv && uv sync
+    startCommand: uv run uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # SMTP — set these in the Render dashboard
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+
+      # Base URL of this deployment (no trailing slash).
+      # Used to build deep-link URLs inside newsletter emails.
+      # e.g. https://eventboard-api.onrender.com
+      - key: SITE_URL
+        sync: false
+
+      # Optional: shared secret that the cron job must send as
+      # X-Admin-Secret to call /admin/* endpoints.
+      # Leave blank to keep admin endpoints open (not recommended in prod).
+      - key: ADMIN_SECRET
+        sync: false
+
+  # ── Cron Job (monthly newsletter) ─────────────────────────────────────────
+  #
+  # Runs at 08:00 UTC every Saturday.  The Python script itself checks
+  # whether today is the second-to-last Saturday of the month and exits
+  # immediately (exit 0) if it is not — so only one real send happens per month.
+  #
+  # The script uses only Python stdlib so no extra packages are needed.
+  - type: cron
+    name: monthly-newsletter-cron
+    runtime: python
+    schedule: "0 8 * * 6"
+    buildCommand: ""
+    startCommand: python scripts/send_newsletter.py
+    envVars:
+      # Full URL of the eventboard-api web service above.
+      # Set this to the Render URL of the web service, e.g.:
+      #   https://eventboard-api.onrender.com
+      - key: API_URL
+        sync: false
+
+      # Must match ADMIN_SECRET set on the web service (if any).
+      - key: ADMIN_SECRET
+        sync: false
+
+      # How long (seconds) to wait for the API to wake up before giving up.
+      - key: HEALTH_POLL_TIMEOUT
+        value: "300"

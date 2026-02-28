@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { fetchEvents, fetchLocations, fetchGameSystems } from '../api'
 import FilterBar from '../components/FilterBar'
 import EventList from '../components/EventList'
@@ -13,11 +14,23 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [view, setView] = useState('list') // 'list' | 'calendar'
-  const [filters, setFilters] = useState({
-    locationId: null,
-    gameSystemIds: [],
-    dateFrom: today,
-    dateTo: null,
+
+  // Initialise filters from URL search params so that email deep links
+  // (e.g. /?location_id=1&game_system_ids=2&game_system_ids=3) land with
+  // the correct filters already applied.
+  const [searchParams] = useSearchParams()
+  const [filters, setFilters] = useState(() => {
+    const locationId = searchParams.get('location_id')
+    const gameSystemIds = searchParams
+      .getAll('game_system_ids')
+      .map(Number)
+      .filter(Boolean)
+    return {
+      locationId: locationId ? parseInt(locationId, 10) : null,
+      gameSystemIds,
+      dateFrom: searchParams.get('date_from') || today,
+      dateTo: searchParams.get('date_to') || null,
+    }
   })
 
   // Load locations and game systems once on mount

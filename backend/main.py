@@ -6,7 +6,7 @@ from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Query
+from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -23,6 +23,17 @@ load_dotenv()
 _WEBSITE_URL = os.getenv("WEBSITE_URL", "http://localhost:8000/")
 
 logging.basicConfig(level=logging.INFO)
+
+# Optional shared secret for /admin/* endpoints.
+# Set ADMIN_SECRET in the environment to require callers to pass
+# X-Admin-Secret: <value> on every admin request.
+# Leave unset (or empty) to keep admin endpoints open — useful for local dev.
+_ADMIN_SECRET = os.getenv("ADMIN_SECRET", "")
+
+
+def _verify_admin(x_admin_secret: str | None = Header(None)) -> None:
+    if _ADMIN_SECRET and x_admin_secret != _ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 @asynccontextmanager
@@ -158,16 +169,16 @@ def subscribe(payload: schemas.SubscribeIn, db: Session = Depends(get_db)):
 
 
 # ---------------------------------------------------------------------------
-# Admin (no auth in MVP — protect via network/reverse proxy in production)
+# Admin (protected by _verify_admin — set ADMIN_SECRET env var in production)
 # ---------------------------------------------------------------------------
 
 
-@app.post("/admin/import", tags=["admin"])
+@app.post("/admin/import", tags=["admin"], dependencies=[Depends(_verify_admin)])
 def trigger_import(db: Session = Depends(get_db)):
     return run_import(db)
 
 
-@app.post("/admin/newsletter", tags=["admin"])
+@app.post("/admin/newsletter", tags=["admin"], dependencies=[Depends(_verify_admin)])
 def trigger_newsletter(db: Session = Depends(get_db)):
     return run_newsletter(db)
 
