@@ -157,3 +157,57 @@ class TestPreviewEmailEndpoint:
         response = client.get("/admin/preview-email")
         assert "<!DOCTYPE html>" in response.text
         assert "All Events This Month" in response.text
+
+
+# ---------------------------------------------------------------------------
+# _build_calendar_html — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestBuildCalendarHtml:
+    def _call(self, events, year=2026, month=2):
+        from backend.newsletter import _build_calendar_html
+
+        return _build_calendar_html(events, year, month)
+
+    def test_returns_html_string(self):
+        html = self._call([])
+        assert isinstance(html, str)
+        assert "<table" in html
+
+    def test_contains_day_of_week_headers(self):
+        html = self._call([])
+        for day in ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"):
+            assert day in html
+
+    def test_contains_month_label(self):
+        html = self._call([], year=2026, month=2)
+        assert "February 2026" in html
+
+    def test_event_title_appears_in_correct_cell(self):
+        event = _mock_event(title="Big Battle", date_val=date(2026, 2, 15))
+        html = self._call([event], year=2026, month=2)
+        assert "Big Battle" in html
+
+    def test_overflow_shows_more_label(self):
+        events = [
+            _mock_event(title=f"Event {i}", date_val=date(2026, 2, 15), game_system_id=i + 1)
+            for i in range(5)
+        ]
+        html = self._call(events, year=2026, month=2)
+        assert "+2 more" in html
+
+    def test_legend_shows_game_system_name(self):
+        event = _mock_event(game_name="Kings of War", date_val=date(2026, 2, 15))
+        html = self._call([event], year=2026, month=2)
+        assert "Kings of War" in html
+
+    def test_empty_month_renders_grid(self):
+        html = self._call([], year=2026, month=2)
+        # February 2026 has 28 days starting on Sunday = 4 full rows
+        assert html.count("<tr>") >= 5  # 1 header row + 4 week rows
+
+    def test_events_from_other_months_excluded(self):
+        event_march = _mock_event(title="March Event", date_val=date(2026, 3, 1))
+        html = self._call([event_march], year=2026, month=2)
+        assert "March Event" not in html

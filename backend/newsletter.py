@@ -1,6 +1,8 @@
+import calendar as _cal
 import logging
 import os
 import smtplib
+from datetime import date as _date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from html import escape
@@ -18,6 +20,119 @@ _SMTP_PORT = int(os.getenv("SMTP_PORT", "1025"))
 _SMTP_USER = os.getenv("SMTP_USER", "")
 _SMTP_PASS = os.getenv("SMTP_PASS", "")
 _EMAIL_FROM = os.getenv("EMAIL_FROM", "noreply@wargameevents.local")
+
+# Pill color pairs (bg, text) — mirror CalendarView.jsx PILL_COLORS in the frontend
+_PILL_COLORS = [
+    ("#ede9fe", "#5b21b6"),  # purple-100 / purple-800
+    ("#e0e7ff", "#3730a3"),  # indigo-100 / indigo-800
+    ("#e0f2fe", "#075985"),  # sky-100 / sky-800
+    ("#d1fae5", "#065f46"),  # emerald-100 / emerald-800
+    ("#fef3c7", "#92400e"),  # amber-100 / amber-800
+    ("#ffe4e6", "#9f1239"),  # rose-100 / rose-800
+    ("#ccfbf1", "#115e59"),  # teal-100 / teal-800
+]
+
+
+def _build_calendar_html(events: list[Event], year: int, month: int) -> str:
+    """Return an inline-style HTML calendar grid for the given year/month."""
+    today_str = _date.today().isoformat()
+
+    # Group events by ISO date string; collect unique game systems for legend
+    events_by_date: dict[str, list[Event]] = {}
+    seen_gs: dict[int, str] = {}
+    for e in events:
+        d = str(e.date)
+        if d not in events_by_date:
+            events_by_date[d] = []
+        events_by_date[d].append(e)
+        if e.game_system.id not in seen_gs:
+            seen_gs[e.game_system.id] = e.game_system.name
+
+    # Build grid cells (Sunday-first)
+    first_dow_mon = _cal.monthrange(year, month)[0]  # Monday=0
+    first_dow_sun = (first_dow_mon + 1) % 7  # Sunday=0
+    days_in_month = _cal.monthrange(year, month)[1]
+    cells: list[int | None] = [None] * first_dow_sun + list(range(1, days_in_month + 1))
+    while len(cells) % 7:
+        cells.append(None)
+
+    # Day-of-week header row
+    day_headers = "".join(
+        f'<th style="padding:8px 4px;text-align:center;color:#9ca3af;font-size:11px;'
+        f"font-weight:600;text-transform:uppercase;letter-spacing:0.05em;"
+        f'border-bottom:1px solid #f3f4f6;">{d}</th>'
+        for d in ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+    )
+
+    # Build week rows
+    rows_html = ""
+    for i in range(0, len(cells), 7):
+        rows_html += "<tr>"
+        for day in cells[i : i + 7]:
+            if day is None:
+                rows_html += (
+                    '<td style="border-right:1px solid #f3f4f6;border-bottom:1px solid #f3f4f6;'
+                    'background:#f9fafb;padding:6px;min-width:0;height:80px;"></td>'
+                )
+            else:
+                date_str = f"{year}-{month:02d}-{day:02d}"
+                day_events = events_by_date.get(date_str, [])
+                is_today = date_str == today_str
+                num_style = (
+                    "display:inline-flex;align-items:center;justify-content:center;"
+                    "width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:600;"
+                    + ("background:#7c3aed;color:white;" if is_today else "color:#374151;")
+                )
+                pills = ""
+                for e in day_events[:3]:
+                    bg, fg = _PILL_COLORS[(e.game_system.id - 1) % len(_PILL_COLORS)]
+                    pills += (
+                        f'<div style="font-size:11px;padding:1px 5px;border-radius:3px;'
+                        f"font-weight:500;overflow:hidden;white-space:nowrap;"
+                        f"text-overflow:ellipsis;margin-bottom:2px;"
+                        f'background:{bg};color:{fg};">{escape(e.title)}</div>'
+                    )
+                overflow = len(day_events) - 3
+                if overflow > 0:
+                    pills += (
+                        f'<div style="font-size:11px;color:#9ca3af;padding-left:4px;">'
+                        f"+{overflow} more</div>"
+                    )
+                rows_html += (
+                    f'<td style="vertical-align:top;padding:6px;'
+                    f"border-right:1px solid #f3f4f6;border-bottom:1px solid #f3f4f6;"
+                    f'min-width:0;height:80px;">'
+                    f'<div style="text-align:right;margin-bottom:4px;">'
+                    f'<span style="{num_style}">{day}</span></div>'
+                    f"{pills}</td>"
+                )
+        rows_html += "</tr>"
+
+    # Legend
+    legend = "".join(
+        f'<span style="font-size:12px;padding:2px 10px;border-radius:9999px;'
+        f"font-weight:500;margin-right:6px;"
+        f"background:{_PILL_COLORS[(gs_id - 1) % len(_PILL_COLORS)][0]};"
+        f'color:{_PILL_COLORS[(gs_id - 1) % len(_PILL_COLORS)][1]};">'
+        f"{escape(gs_name)}</span>"
+        for gs_id, gs_name in seen_gs.items()
+    )
+    legend_block = f'<div style="margin-top:10px;line-height:2;">{legend}</div>' if legend else ""
+
+    month_name = _date(year, month, 1).strftime("%B %Y")
+    return (
+        f'<div style="margin-bottom:24px;">'
+        f'<h2 style="font-size:15px;font-weight:600;color:#374151;margin:0 0 12px 0;">'
+        f"{month_name}</h2>"
+        f'<div style="border-radius:12px;overflow:hidden;border:1px solid #f3f4f6;'
+        f'box-shadow:0 1px 3px rgba(0,0,0,0.06);">'
+        f'<table style="width:100%;border-collapse:collapse;table-layout:fixed;background:white;">'
+        f"<thead><tr>{day_headers}</tr></thead>"
+        f"<tbody>{rows_html}</tbody>"
+        f"</table></div>"
+        f"{legend_block}"
+        f"</div>"
+    )
 
 
 def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
