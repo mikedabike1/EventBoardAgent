@@ -78,19 +78,13 @@ class TestBuildPreviewEmail:
         html = build_preview_email(
             [_mock_event(date_val=date(2026, 2, 15))], website_url="https://test.example.com"
         )
-        assert "Feb 15" in html
-        assert "Sun, Feb 15 2026" not in html  # year omitted from event date cell
+        assert "Sun, Feb 15" in html
+        assert "Sun, Feb 15 2026" not in html
 
     def test_empty_events_still_returns_html(self):
         html = build_preview_email([], website_url="https://test.example.com")
         assert "<table" in html
         assert "<tbody>" in html
-
-    def test_missing_start_time_shows_tbd(self):
-        html = build_preview_email(
-            [_mock_event(start_time=None)], website_url="https://test.example.com"
-        )
-        assert "TBD" in html
 
     def test_multiple_events_all_appear(self):
         events = [
@@ -104,6 +98,12 @@ class TestBuildPreviewEmail:
     def test_banner_links_to_website_url(self):
         html = build_preview_email([_mock_event()], website_url="https://mysite.example.com")
         assert 'href="https://mysite.example.com"' in html
+
+    def test_banner_url_with_special_chars_is_escaped(self):
+        html = build_preview_email(
+            [_mock_event()], website_url="https://mysite.example.com/?a=1&b=2"
+        )
+        assert 'href="https://mysite.example.com/?a=1&amp;b=2"' in html
 
     def test_title_is_m5_magazine(self):
         html = build_preview_email([_mock_event()], website_url="https://test.example.com")

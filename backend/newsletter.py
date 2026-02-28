@@ -214,10 +214,15 @@ def build_preview_email(events: list[Event], website_url: str) -> str:
         location_name = escape(e.location.name)
         title = escape(e.title)
         description = escape(e.description or "")
+        _safe_source = (
+            escape(e.source_url)
+            if e.source_url and e.source_url.startswith(("https://", "http://"))
+            else None
+        )
         source_link = (
-            f'<a href="{escape(e.source_url)}" target="_blank"'
+            f'<a href="{_safe_source}" target="_blank"'
             f' style="color:#7c3aed;text-decoration:none;">↗</a>'
-            if e.source_url
+            if _safe_source
             else ""
         )
         rows += f"""
