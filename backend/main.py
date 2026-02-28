@@ -1,3 +1,4 @@
+import calendar
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -7,7 +8,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
@@ -15,9 +16,11 @@ from . import databridge as crud
 from . import schemas
 from .database import create_tables, get_db
 from .importer import compute_dedup_hash, run_import
-from .newsletter import run_newsletter
+from .newsletter import build_preview_email, run_newsletter
 
 load_dotenv()
+
+_WEBSITE_URL = os.getenv("WEBSITE_URL", "http://localhost:8000/")
 
 logging.basicConfig(level=logging.INFO)
 
@@ -178,6 +181,22 @@ def trigger_import(db: Session = Depends(get_db)):
 @app.post("/admin/newsletter", tags=["admin"], dependencies=[Depends(_verify_admin)])
 def trigger_newsletter(db: Session = Depends(get_db)):
     return run_newsletter(db)
+
+
+@app.get("/admin/preview-email", tags=["admin"])
+def preview_email(db: Session = Depends(get_db)):
+    today = date.today()
+    date_from = today.replace(day=1)
+    last_day = calendar.monthrange(today.year, today.month)[1]
+    date_to = today.replace(day=last_day)
+    events = crud.get_events(db, date_from=date_from, date_to=date_to, limit=500)
+    html = build_preview_email(events, website_url=_WEBSITE_URL)
+    filename = f"preview-email-{today.strftime('%Y-%m')}.html"
+    return Response(
+        content=html,
+        media_type="text/html",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.get("/health", tags=["meta"])
