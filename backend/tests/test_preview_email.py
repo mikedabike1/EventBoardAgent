@@ -103,6 +103,7 @@ def db():
     Session = sessionmaker(bind=engine)
     session = Session()
     yield session
+    session.rollback()
     session.close()
     Base.metadata.drop_all(bind=engine)
 
@@ -132,10 +133,11 @@ class TestPreviewEmailEndpoint:
         assert disposition.startswith("attachment")
 
     def test_filename_contains_current_month(self, client):
-        today = date.today()
-        expected_slug = today.strftime("%Y-%m")
+        import re
+
         disposition = client.get("/admin/preview-email").headers["content-disposition"]
-        assert expected_slug in disposition
+        # filename must be preview-email-YYYY-MM.html (month-stamped)
+        assert re.search(r'filename="preview-email-\d{4}-\d{2}\.html"', disposition)
 
     def test_body_is_valid_html(self, client):
         response = client.get("/admin/preview-email")

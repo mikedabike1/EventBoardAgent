@@ -175,13 +175,13 @@ def preview_email(db: Session = Depends(get_db)):
     date_from = today.replace(day=1)
     last_day = calendar.monthrange(today.year, today.month)[1]
     date_to = today.replace(day=last_day)
-    events = crud.get_events(db, date_from=date_from, date_to=date_to)
+    events = crud.get_events(db, date_from=date_from, date_to=date_to, limit=500)
     html = build_preview_email(events)
     filename = f"preview-email-{today.strftime('%Y-%m')}.html"
     return Response(
         content=html,
         media_type="text/html",
-        headers={"Content-Disposition": f"attachment; filename={filename}"},
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 
 
