@@ -3,7 +3,15 @@
 from datetime import date
 from unittest.mock import MagicMock
 
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+
 from backend import models  # noqa: F401 — registers ORM classes with Base
+from backend.database import Base, get_db
+from backend.main import app
 from backend.newsletter import build_preview_email
 
 # ---------------------------------------------------------------------------
@@ -77,3 +85,59 @@ class TestBuildPreviewEmail:
         html = build_preview_email(events)
         assert "Event Alpha" in html
         assert "Event Beta" in html
+
+
+# ---------------------------------------------------------------------------
+# /admin/preview-email endpoint — integration tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture()
+def db():
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(bind=engine)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    yield session
+    session.close()
+    Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture()
+def client(db):
+    def override_get_db():
+        yield db
+
+    app.dependency_overrides[get_db] = override_get_db
+    yield TestClient(app)
+    app.dependency_overrides.clear()
+
+
+class TestPreviewEmailEndpoint:
+    def test_returns_200(self, client):
+        response = client.get("/admin/preview-email")
+        assert response.status_code == 200
+
+    def test_content_type_is_html(self, client):
+        response = client.get("/admin/preview-email")
+        assert "text/html" in response.headers["content-type"]
+
+    def test_content_disposition_is_attachment(self, client):
+        response = client.get("/admin/preview-email")
+        disposition = response.headers["content-disposition"]
+        assert disposition.startswith("attachment")
+
+    def test_filename_contains_current_month(self, client):
+        today = date.today()
+        expected_slug = today.strftime("%Y-%m")
+        disposition = client.get("/admin/preview-email").headers["content-disposition"]
+        assert expected_slug in disposition
+
+    def test_body_is_valid_html(self, client):
+        response = client.get("/admin/preview-email")
+        assert "<!DOCTYPE html>" in response.text
+        assert "All Events This Month" in response.text
