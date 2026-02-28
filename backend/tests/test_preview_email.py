@@ -1,18 +1,10 @@
-"""Tests for build_preview_email and the /admin/preview-email endpoint."""
+"""Unit tests for build_preview_email."""
 
 from datetime import date
 from unittest.mock import MagicMock
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from backend import models  # noqa: F401 — registers ORM classes with Base
-from backend.database import Base, get_db
-from backend.main import app
 from backend.newsletter import build_preview_email
-
 
 # ---------------------------------------------------------------------------
 # Helpers
