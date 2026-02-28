@@ -1,0 +1,102 @@
+[
+  {
+    "location_name": "Dragon's Den Games",
+    "game_system": "Warhammer 40,000",
+    "title": "Friday Night 40K — Open Play",
+    "date": "2026-02-06",
+    "time": "18:00",
+    "description": "Casual open play night. All points levels welcome. Tables provided.",
+    "source_url": "https://example.com/event/1",
+    "source_type": "facebook"
+  },
+  {
+    "location_name": "Dragon's Den Games",
+    "game_system": "Age of Sigmar",
+    "title": "Saturday Age of Sigmar League",
+    "date": "2026-02-07",
+    "time": "12:00",
+    "description": "Week 3 of the winter league. Bring your 2000pt list.",
+    "source_url": "https://example.com/event/2",
+    "source_type": "facebook"
+  },
+  {
+    "location_name": "Game Vault",
+    "game_system": "Warhammer 40,000",
+    "title": "40K Tournament — 2000pts",
+    "date": "2026-02-14",
+    "time": "10:00",
+    "description": "Valentine's Day 40K! 3 rounds, ITC scoring. $10 entry. Prizes for top 3.",
+    "source_url": "https://example.com/event/3",
+    "source_type": "website"
+  },
+  {
+    "location_name": "Game Vault",
+    "game_system": "Bolt Action",
+    "title": "Bolt Action Open Play",
+    "date": "2026-02-14",
+    "time": "13:00",
+    "description": "Grab a table and push some WW2 models around. All eras welcome.",
+    "source_url": "https://example.com/event/4",
+    "source_type": "website"
+  },
+  {
+    "location_name": "The Battle Standard",
+    "game_system": "Warhammer 40,000",
+    "title": "Friday Night 40K",
+    "date": "2026-02-20",
+    "time": "17:30",
+    "description": "Competitive and casual tables. Sign up on Discord to reserve a spot.",
+    "source_url": "https://example.com/event/5",
+    "source_type": "discord"
+  },
+  {
+    "location_name": "The Battle Standard",
+    "game_system": "Warhammer: The Old World",
+    "title": "Old World Escalation League — Round 4",
+    "date": "2026-02-21",
+    "time": "11:00",
+    "description": "1500pts this week. Painting progress check — 3 colors minimum to play.",
+    "source_url": "https://example.com/event/6",
+    "source_type": "discord"
+  },
+  {
+    "location_name": "Dragon's Den Games",
+    "game_system": "Flames of War",
+    "title": "Flames of War Intro Night",
+    "date": "2026-02-21",
+    "time": "14:00",
+    "description": "Never played Flames of War? Come learn! Loaner armies available.",
+    "source_url": "https://example.com/event/7",
+    "source_type": "facebook"
+  },
+  {
+    "location_name": "Meeples & Miniatures",
+    "game_system": "Kings of War",
+    "title": "Kings of War Monthly — February",
+    "date": "2026-02-22",
+    "time": "10:00",
+    "description": "Monthly get-together for KoW fans. Bring 2000pts, any army.",
+    "source_url": "https://example.com/event/8",
+    "source_type": "website"
+  },
+  {
+    "location_name": "Meeples & Miniatures",
+    "game_system": "Warhammer 40,000",
+    "title": "40K Narrative Campaign — Session 5",
+    "date": "2026-02-27",
+    "time": "18:00",
+    "description": "Ongoing narrative campaign. Registered players only. Contact the store to join.",
+    "source_url": "https://example.com/event/9",
+    "source_type": "website"
+  },
+  {
+    "location_name": "Game Vault",
+    "game_system": "Age of Sigmar",
+    "title": "AoS Path to Glory — Week 6",
+    "date": "2026-02-28",
+    "time": "12:00",
+    "description": "Final week of the Path to Glory campaign. Grand finale battle!",
+    "source_url": "https://example.com/event/10",
+    "source_type": "website"
+  }
+]
