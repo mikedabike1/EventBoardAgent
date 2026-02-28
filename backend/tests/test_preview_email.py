@@ -78,7 +78,8 @@ class TestBuildPreviewEmail:
         html = build_preview_email(
             [_mock_event(date_val=date(2026, 2, 15))], website_url="https://test.example.com"
         )
-        assert "Feb 15 2026" in html
+        assert "Feb 15" in html
+        assert "Sun, Feb 15 2026" not in html  # year omitted from event date cell
 
     def test_empty_events_still_returns_html(self):
         html = build_preview_email([], website_url="https://test.example.com")
@@ -99,6 +100,47 @@ class TestBuildPreviewEmail:
         html = build_preview_email(events, website_url="https://test.example.com")
         assert "Event Alpha" in html
         assert "Event Beta" in html
+
+    def test_banner_links_to_website_url(self):
+        html = build_preview_email([_mock_event()], website_url="https://mysite.example.com")
+        assert 'href="https://mysite.example.com"' in html
+
+    def test_title_is_m5_magazine(self):
+        html = build_preview_email([_mock_event()], website_url="https://test.example.com")
+        assert "Metro Milwaukee Miniature Monthly Magazine" in html
+
+    def test_time_shows_cst_label(self):
+        html = build_preview_email(
+            [_mock_event(start_time="18:00")], website_url="https://test.example.com"
+        )
+        assert "18:00 CST" in html
+
+    def test_missing_time_shows_tbd_not_cst(self):
+        html = build_preview_email(
+            [_mock_event(start_time=None)], website_url="https://test.example.com"
+        )
+        assert "TBD" in html
+        assert "None" not in html
+
+    def test_source_url_link_appears(self):
+        html = build_preview_email(
+            [_mock_event(source_url="https://fb.com/event/123")],
+            website_url="https://test.example.com",
+        )
+        assert "https://fb.com/event/123" in html
+        assert "↗" in html
+
+    def test_no_source_url_renders_no_arrow(self):
+        event = _mock_event()
+        event.source_url = None
+        html = build_preview_email([event], website_url="https://test.example.com")
+        assert html.count("↗") == 0
+
+    def test_calendar_grid_included(self):
+        html = build_preview_email([_mock_event()], website_url="https://test.example.com")
+        assert "<h2" in html
+        assert "Sun" in html
+        assert "Mon" in html
 
 
 # ---------------------------------------------------------------------------

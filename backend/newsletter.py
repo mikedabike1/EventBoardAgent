@@ -201,15 +201,25 @@ def build_html_email(subscriber: Subscriber, events: list[Event]) -> str:
 
 
 def build_preview_email(events: list[Event], website_url: str) -> str:
-    # website_url is embedded in the banner link — wired in the next task
+    today = _date.today()
+    calendar_html = _build_calendar_html(events, today.year, today.month)
+    safe_url = escape(website_url)
+
     rows = ""
     for e in events:
-        date_str = e.date.strftime("%a, %b %d %Y")
-        time_str = escape(e.start_time or "TBD")
+        date_str = e.date.strftime("%a, %b %d")
+        time_val = (e.start_time + " CST") if e.start_time else "TBD"
+        time_str = escape(time_val)
         game_name = escape(e.game_system.name)
         location_name = escape(e.location.name)
         title = escape(e.title)
         description = escape(e.description or "")
+        source_link = (
+            f'<a href="{escape(e.source_url)}" target="_blank"'
+            f' style="color:#7c3aed;text-decoration:none;">↗</a>'
+            if e.source_url
+            else ""
+        )
         rows += f"""
         <tr style="border-bottom: 1px solid #e5e7eb;">
           <td style="padding: 10px 12px; white-space: nowrap;">{date_str}</td>
@@ -218,6 +228,7 @@ def build_preview_email(events: list[Event], website_url: str) -> str:
           <td style="padding: 10px 12px;">{location_name}</td>
           <td style="padding: 10px 12px; font-weight: 500;">{title}</td>
           <td style="padding: 10px 12px; color: #6b7280; font-size: 13px;">{description}</td>
+          <td style="padding: 10px 12px; text-align: center;">{source_link}</td>
         </tr>"""
 
     return f"""<!DOCTYPE html>
@@ -225,17 +236,20 @@ def build_preview_email(events: list[Event], website_url: str) -> str:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Events This Month</title>
+  <title>Metro Milwaukee Miniature Monthly Magazine</title>
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
              background: #f9fafb; margin: 0; padding: 32px 16px;">
-  <div style="max-width: 700px; margin: 0 auto; background: white;
+  <div style="max-width: 800px; margin: 0 auto; background: white;
               border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <div style="background: #7c3aed; padding: 32px; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 24px;">&#127922; Wargame Event Finder</h1>
-      <p style="color: #ddd6fe; margin: 8px 0 0; font-size: 15px;">All Events This Month</p>
-    </div>
+    <a href="{safe_url}" style="text-decoration: none; display: block;">
+      <div style="background: #7c3aed; padding: 32px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 24px;">&#127922; Metro Milwaukee Miniature Monthly Magazine</h1>
+        <p style="color: #ddd6fe; margin: 8px 0 0; font-size: 15px;">All Events This Month</p>
+      </div>
+    </a>
     <div style="padding: 32px;">
+      {calendar_html}
       <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
           <thead>
@@ -246,6 +260,7 @@ def build_preview_email(events: list[Event], website_url: str) -> str:
               <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Location</th>
               <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Event</th>
               <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Details</th>
+              <th style="padding: 10px 12px; color: #6b7280; font-weight: 600;">Link</th>
             </tr>
           </thead>
           <tbody>{rows}
