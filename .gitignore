@@ -211,6 +211,9 @@ __marimo__/
 *.db-shm
 *.db-wal
 
+# Git worktrees
+.worktrees/
+
 # Frontend
 frontend/node_modules/
 frontend/.env
