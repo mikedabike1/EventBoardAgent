@@ -14,6 +14,10 @@ services:
     buildCommand: pip install uv && uv sync
     startCommand: uv run uvicorn backend.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      # Database — Neon PostgreSQL connection string (set in Render dashboard)
+      - key: DATABASE_URL
+        sync: false
+
       # SMTP — set these in the Render dashboard
       - key: SMTP_HOST
         sync: false

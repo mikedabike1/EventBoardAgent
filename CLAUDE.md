@@ -4,6 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+### Local database (docker-compose)
+
+```bash
+docker-compose up -d          # start local postgres on :5432
+docker-compose down           # stop (data persists in pgdata volume)
+docker-compose down -v        # stop + wipe volume
+```
+
+### Database migrations (Alembic)
+
+```bash
+uv run alembic upgrade head                          # apply all pending migrations
+uv run alembic downgrade base                        # roll back all migrations
+uv run alembic revision --autogenerate -m "desc"    # generate a new migration from model changes
+uv run alembic history                               # list applied migrations
+```
+
 ### Backend
 
 ```bash
@@ -32,13 +49,22 @@ npm run build  # production build into frontend/dist/
 
 ### Environment
 
-Copy `.env.example` to `backend/.env`. In dev, set `VITE_API_URL=http://localhost:8000` in `frontend/.env` so the frontend hits the FastAPI server directly (the Vite proxy in `vite.config.js` covers `/api` prefix paths only, which are not currently used).
+Copy `.env.example` to `backend/.env`. The `DATABASE_URL` variable is **required** — for local dev it points at the docker-compose postgres. In dev, set `VITE_API_URL=http://localhost:8000` in `frontend/.env` so the frontend hits the FastAPI server directly.
+
+**Local dev quick-start:**
+```bash
+docker-compose up -d
+cp .env.example backend/.env          # DATABASE_URL already set for local postgres
+uv sync
+uv run alembic upgrade head
+uv run uvicorn backend.main:app --reload --port 8000
+```
 
 ---
 
 ## Architecture
 
-**Stack**: FastAPI + SQLAlchemy (SQLite) backend; React 19 + Vite + Tailwind CSS frontend.
+**Stack**: FastAPI + SQLAlchemy (PostgreSQL via Neon) backend; React 19 + Vite + Tailwind CSS frontend.
 
 ### Backend
 
@@ -52,7 +78,7 @@ Key modules:
 - `databridge.py` — all DB operations (get/create location, game system, events, subscribers)
 - `importer.py` — reads JSON files from `backend/data/`, normalizes records, deduplicates by SHA256 hash of `location_name|game_system|title|date`, expires events older than 30 days
 - `newsletter.py` — builds HTML email table and sends via SMTP; currently imports `databridge` directly rather than via `crud`
-- `database.py` — SQLite engine at `./events.db`, session factory, `create_tables()` called at app startup via lifespan
+- `database.py` — PostgreSQL engine (reads `DATABASE_URL` env var), session factory, `create_tables()` called at app startup via lifespan; Alembic handles schema migrations
 
 **Event deduplication**: `importer.compute_dedup_hash(location_name, game_system, title, date)` → SHA256 hex. On conflict the existing event is updated (`last_seen_at`, `source_url`, `is_expired=False`) rather than inserted.
 

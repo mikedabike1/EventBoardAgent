@@ -1,0 +1,12 @@
+# Copy this file to backend.hcl (gitignored) and fill in your Terraform Cloud org.
+# Then run:  terraform init -backend-config=backend.hcl
+#
+# In CI the TF_API_TOKEN env var is set from the GitHub secret and the backend
+# config is passed via environment variables (TF_CLOUD_ORGANIZATION is set in
+# the workflow, the workspace name is hardcoded in versions.tf).
+
+organization = "YOUR_TF_CLOUD_ORG"
+
+workspaces {
+  name = "eventboard"
+}

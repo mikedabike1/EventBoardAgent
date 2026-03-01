@@ -1,0 +1,82 @@
+name: Provision Infrastructure (Terraform + Neon)
+
+# Run manually from the Actions tab, or automatically whenever the Terraform
+# config changes on main.  This workflow creates/updates the Neon project,
+# QA branch, roles, databases, and endpoints, then stores the resulting
+# connection strings as repository secrets so the migration workflows can use
+# them without needing Terraform themselves.
+on:
+  push:
+    branches: [main]
+    paths: ["terraform/**"]
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+
+    # Required secrets (set once in repo Settings → Secrets and variables → Actions):
+    #   NEON_API_KEY       — Neon API key (https://console.neon.tech/app/settings/api-keys)
+    #   TF_API_TOKEN       — Terraform Cloud user/team token
+    #   TF_CLOUD_ORG       — your Terraform Cloud organization name (can also be a plain variable)
+    #   GH_PAT             — GitHub PAT with repo scope (for writing repository secrets).
+    #                        Create at https://github.com/settings/tokens with "repo" scope.
+    #                        If omitted, copy the connection strings from the job summary manually.
+
+    env:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORG }}
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.8"
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: terraform
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: terraform
+
+      # Store the sensitive outputs as GitHub repository secrets so they are
+      # available to the migrate-qa and migrate-prod workflows.
+      # Requires GH_PAT with "repo" scope.
+      - name: Store connection strings as GitHub secrets
+        if: ${{ secrets.GH_PAT != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          terraform -chdir=terraform output -raw prod_database_url \
+            | gh secret set NEON_PROD_DATABASE_URL --repo "$GITHUB_REPOSITORY" --body -
+
+          terraform -chdir=terraform output -raw qa_database_url \
+            | gh secret set NEON_QA_DATABASE_URL --repo "$GITHUB_REPOSITORY" --body -
+
+          echo "✓ Secrets NEON_PROD_DATABASE_URL and NEON_QA_DATABASE_URL updated."
+
+      - name: Manual setup reminder
+        if: ${{ secrets.GH_PAT == '' }}
+        run: |
+          echo "::warning::GH_PAT secret not set — connection strings were NOT stored automatically."
+          echo "Run the following locally and add the outputs as repository secrets:"
+          echo ""
+          echo "  cd terraform && terraform output prod_database_url"
+          echo "  → add as NEON_PROD_DATABASE_URL"
+          echo ""
+          echo "  cd terraform && terraform output qa_database_url"
+          echo "  → add as NEON_QA_DATABASE_URL"

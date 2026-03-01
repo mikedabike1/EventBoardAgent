@@ -1,0 +1,41 @@
+name: Migrate QA Database
+
+# Runs Alembic migrations against the Neon QA branch whenever a non-main
+# branch is pushed.  This keeps the QA schema in sync with the latest
+# migration on any active development branch.
+#
+# Required repository secret:
+#   NEON_QA_DATABASE_URL — set automatically by the infra.yml workflow,
+#                          or manually after running `terraform output qa_database_url`.
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - "alembic/**"
+      - "backend/models.py"
+      - "pyproject.toml"
+      - "uv.lock"
+
+jobs:
+  migrate:
+    name: Alembic upgrade head (QA)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: ${{ secrets.NEON_QA_DATABASE_URL }}
+        run: uv run alembic upgrade head

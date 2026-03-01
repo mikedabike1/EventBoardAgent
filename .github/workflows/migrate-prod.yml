@@ -1,0 +1,43 @@
+name: Migrate Production Database
+
+# Runs Alembic migrations against the Neon production (main) branch when
+# code is merged to main.  Migrations run before the app restarts on Render,
+# so the schema is always up to date before new code goes live.
+#
+# Required repository secret:
+#   NEON_PROD_DATABASE_URL — set automatically by the infra.yml workflow,
+#                            or manually after running `terraform output prod_database_url`.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "alembic/**"
+      - "backend/models.py"
+      - "pyproject.toml"
+      - "uv.lock"
+
+jobs:
+  migrate:
+    name: Alembic upgrade head (prod)
+    runs-on: ubuntu-latest
+
+    environment: production  # optional: add approval gate in repo Settings → Environments
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: ${{ secrets.NEON_PROD_DATABASE_URL }}
+        run: uv run alembic upgrade head

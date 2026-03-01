@@ -217,3 +217,11 @@ __marimo__/
 # Frontend
 frontend/node_modules/
 frontend/.env
+
+# Terraform local state and secrets (use Terraform Cloud for remote state)
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/tfplan
+terraform/backend.hcl
